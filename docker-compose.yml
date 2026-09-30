@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: minipdm-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-minipdm}
+      POSTGRES_USER: ${POSTGRES_USER:-minipdm}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-minipdm}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-minipdm} -d ${POSTGRES_DB:-minipdm}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  pgdata:
