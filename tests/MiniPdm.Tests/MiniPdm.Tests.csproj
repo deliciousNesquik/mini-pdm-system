@@ -23,6 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\src\MiniPdm.Cad.Json\MiniPdm.Cad.Json.csproj" />
       <ProjectReference Include="..\..\src\MiniPdm.Core\MiniPdm.Core.csproj" />
       <ProjectReference Include="..\..\src\MiniPdm.Data\MiniPdm.Data.csproj" />
     </ItemGroup>
