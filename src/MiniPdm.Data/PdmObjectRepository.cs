@@ -4,15 +4,19 @@ using Npgsql;
 
 namespace MiniPdm.Data;
 
-public sealed record PdmObjectListItem(
-    long Id, ObjectType Type, string? Designation, string Name,
-    int? CurrentVersionNo, ObjectState? CurrentState);
-
-/// <summary>pdm_object: создание (ADR 0011, Р.2a) и чтение списка/поиск для UI.</summary>
+/// <summary>
+/// Репозиторий для работы с объектами PDM (Product Data Management) в базе данных.
+/// </summary>
 public sealed class PdmObjectRepository
 {
-    /// <summary>Создаёт объект, возвращает id. Уникальность защищают частичные
-    /// индексы схемы; 23505 сюда дойти не должен — ReImportRules ловит конфликт раньше.</summary>
+    /// <summary>
+    /// Создает новый объект PDM в базе данных и возвращает его идентификатор.
+    /// </summary>
+    /// <param name="type">Тип объекта</param>
+    /// <param name="designation">Обозначение</param>
+    /// <param name="name">Наименование</param>
+    /// <param name="tx">Транзакция</param>
+    /// <returns>Идентификатор созданного объекта</returns>
     public async Task<long> CreateAsync(
         ObjectType type, string? designation, string name, NpgsqlTransaction tx)
     {
@@ -24,15 +28,19 @@ public sealed class PdmObjectRepository
         
         return await tx.Connection!.QuerySingleAsync<long>(sql, new
         {
-            Type = type.ToString(),   // ADR 0001: значения CHECK — строки; явная конвертация,
+            Type = type.ToString(),
             Designation = designation,
             Name = name
         }, tx);
     }
 
-    /// <summary>Список объектов для дерева-корней UI; search — подстрока
-    /// обозначения или наименования. SQL собирается условно: Npgsql не любит
-    /// NULL-параметры в ILIKE-сравнениях без явного типа.</summary>
+    /// <summary>
+    /// Возвращает список объектов PDM, соответствующих заданному поисковому запросу.
+    /// </summary>
+    /// <param name="search">Поисковый запрос</param>
+    /// <param name="conn">Подключение к базе данных</param>
+    /// <param name="tx">Транзакция</param>
+    /// <returns>Список объектов PDM, соответствующих поисковому запросу</returns>
     public async Task<IReadOnlyList<PdmObjectListItem>> ListAsync(
         string? search, NpgsqlConnection conn, NpgsqlTransaction? tx = null)
     {

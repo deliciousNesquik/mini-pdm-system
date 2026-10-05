@@ -5,12 +5,17 @@ namespace MiniPdm.Data;
 
 public sealed record BomLinkRow(long ChildObjectId, int Quantity);
 
-/// <summary>Состав версии (bom_link). Пишет только ImportService —
-/// единственный оркестратор записи (ADR 0011).</summary>
+/// <summary>
+/// Репозиторий для работы с таблицей bom_link
+/// </summary>
 public sealed class BomLinkRepository
 {
-    /// <summary>Перезапись состава версии: DELETE + пакетный INSERT одним
-    /// стейтментом через unnest. Для версии «В работе» перезапись легальна (ТЗ).</summary>
+    /// <summary>
+    /// Удаляет все строки состава версии и вставляет новые.
+    /// </summary>
+    /// <param name="versionId">Идентификатор версии</param>
+    /// <param name="links">Новые строки состава</param>
+    /// <param name="tx">Транзакция</param>
     public async Task ReplaceCompositionAsync(
         long versionId, IReadOnlyCollection<BomLinkRow> links, NpgsqlTransaction tx)
     {

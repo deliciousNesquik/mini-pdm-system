@@ -5,16 +5,18 @@ using Npgsql;
 
 namespace MiniPdm.Data;
 
-/// <summary>Чтение дерева состава одним рекурсивным CTE (ТЗ п.2.3 — один запрос,
-/// а не цикл из C#).</summary>
+/// <summary>
+/// Репозиторий для работы с деревом сборки (BOM).
+/// </summary>
 public sealed class BomRepository
 {
-    /// <summary>Дерево от корневой сборки (её текущая версия).
-    /// ADR 0009: LEFT JOIN финальной выборки — узел без действующей версии
-    /// остаётся строкой (HasActiveVersion = false); внутренний JOIN шага
-    /// рекурсии не раскрывает его состав. Guard NOT = ANY(path) — защита от
-    /// зацикливания при ручной правке БД (импортируется только ациклический граф).
-    /// У корня без действующей версии дерево пусто.</summary>
+    /// <summary>
+    /// Загружает дерево сборки (BOM) для указанного корневого объекта.
+    /// </summary>
+    /// <param name="rootObjectId">Идентификатор корневого объекта</param>
+    /// <param name="conn">Подключение к базе данных</param>
+    /// <param name="tx">Транзакция</param>
+    /// <returns></returns>
     public async Task<IReadOnlyList<BomRow>> LoadTreeAsync(
         long rootObjectId, NpgsqlConnection conn, NpgsqlTransaction? tx = null)
     {
@@ -48,9 +50,7 @@ public sealed class BomRepository
               LEFT JOIN object_version ov ON ov.id = po.current_version_id
              ORDER BY t.path;
             """;
-
-        // Сырой класс с примитивными свойствами: Dapper присваивает без конверсий
-        // (позиционный record падает: типы колонок — строки, не enum).
+        
         var raw = await conn.QueryAsync<TreeRowRaw>(sql, new { RootObjectId = rootObjectId }, tx);
 
         return raw
@@ -64,17 +64,5 @@ public sealed class BomRepository
                 r.HasActiveVersion,
                 r.UnitMassKg))
             .ToList();
-    }
-
-    private sealed class TreeRowRaw
-    {
-        public long[] Path { get; set; } = [];
-        public string Type { get; set; } = "";
-        public string? Designation { get; set; }
-        public string Name { get; set; } = "";
-        public string? State { get; set; }
-        public int QuantityOnPath { get; set; }
-        public bool HasActiveVersion { get; set; }
-        public decimal? UnitMassKg { get; set; }
     }
 }

@@ -7,9 +7,7 @@ using Npgsql;
 namespace MiniPdm.Data;
 
 /// <summary>
-/// Оркестратор импорта (ТЗ п.2.4): чтение файлов и анализ — ДО транзакции,
-/// вся запись — в ОДНОЙ транзакции. Единственное место слоя, знающее
-/// ICadDocumentReader (ТЗ: логика импорта тестируется с подменой ридера).
+/// Сервис импорта CAD-документов в базу данных.
 /// </summary>
 public sealed class ImportService
 {
@@ -27,9 +25,15 @@ public sealed class ImportService
         _db = db;
     }
 
+    /// <summary>
+    /// Импортирует все CAD-документы из указанной папки в базу данных.
+    /// </summary>
+    /// <param name="folder">Путь к папке с CAD-документами</param>
+    /// <param name="ct">Токен отмены</param>
+    /// <returns>Результат анализа импорта</returns>
+    /// <exception cref="InvalidOperationException">Если у объекта нет действующей версии</exception>
     public async Task<ImportAnalysis> ImportFolderAsync(string folder, CancellationToken ct = default)
     {
-        // 1. Чтение: ошибка одного документа — вердикт, остальные продолжаются (ТЗ).
         var paths = await _reader.ListDocumentsAsync(folder, ct);
         var documents = new List<CadDocument>();
         var readIssues = new List<ImportIssue>();
@@ -45,7 +49,7 @@ public sealed class ImportService
             }
         }
 
-        // 2. Анализ набора — чистая функция ядра.
+        // Анализ набора
         var analysis = _analyzer.Analyze(documents);
         var docsByName = analysis.Importable.ToDictionary(d => d.FileName, StringComparer.Ordinal);
 
@@ -54,8 +58,7 @@ public sealed class ImportService
         try
         {
             var snapshots = await _snapshots.LoadAllAsync(conn, tx);
-
-            // 3. Решения против состояния БД (повторный импорт, ТЗ «Предметная область»).
+            
             var actions = new Dictionary<string, ReImportAction>(StringComparer.Ordinal);
             var dbIssues = new List<ImportIssue>();
             foreach (var doc in analysis.Importable)
@@ -69,7 +72,7 @@ public sealed class ImportService
                     actions[doc.FileName] = action;
             }
 
-            // 4. Каскад на этапе БД: сборка, чей компонент не импортируется, тоже не импортируется.
+            // Каскад на этапе БД
             var changed = true;
             while (changed)
             {
@@ -87,8 +90,7 @@ public sealed class ImportService
                     changed = true;
                 }
             }
-
-            // 5. Фаза 1: новые объекты (id по RETURNING, Р.2a) — нужны составам.
+            
             var newIds = new Dictionary<string, long>(StringComparer.Ordinal);
             var versionIds = new Dictionary<string, long>(StringComparer.Ordinal);
             foreach (var doc in analysis.Importable)
@@ -113,12 +115,11 @@ public sealed class ImportService
                     : snapshots.CurrentVersionIdByIdentity[IdentityOf(d)]
                       ?? throw new InvalidOperationException(
                           $"У объекта {d.FileName} нет действующей версии для записи состава.");
-
-            // 6. Фаза 2: обновления, новые версии, составы.
+            
             foreach (var doc in analysis.Importable)
             {
                 if (!actions.TryGetValue(doc.FileName, out var action)) continue; // снят каскадом
-                if (action == ReImportAction.Unchanged) continue;                 // ТЗ: ничего не происходит
+                if (action == ReImportAction.Unchanged) continue;
 
                 switch (action)
                 {
@@ -133,7 +134,7 @@ public sealed class ImportService
                         break;
 
                     case ReImportAction.CreateObject:
-                        break; // версия создана в фазе 1
+                        break;
                 }
 
                 if (doc.Type == ObjectType.Assembly)
@@ -144,8 +145,7 @@ public sealed class ImportService
                     await _links.ReplaceCompositionAsync(VersionIdOf(doc), links, tx);
                 }
             }
-
-            // 7. Итоговые множества отчёта и журнал.
+            
             var failedAtDb = dbIssues.Select(i => i.FileName).ToHashSet(StringComparer.Ordinal);
             var finalImportable = analysis.Importable
                 .Where(d => !failedAtDb.Contains(d.FileName)).ToList();
@@ -163,11 +163,21 @@ public sealed class ImportService
         }
     }
 
+    /// <summary>
+    /// Возвращает уникальный ключ объекта по его типу, обозначению и наименованию.
+    /// </summary>
+    /// <param name="doc">Cad документ</param>
+    /// <returns>Стабильный строковый ключ идентичности</returns>
     private static string IdentityOf(CadDocument doc) =>
         ObjectIdentity.Key(doc.Type, doc.Designation, doc.Name);
 
-    /// <summary>Строка на файл (Р.6а): Error/Warning из итоговых issues,
-    /// Info — принятые без замечаний; Unchanged получает причину «данные не изменились».</summary>
+    /// <summary>
+    /// Записывает лог импорта в базу данных.
+    /// </summary>
+    /// <param name="tx">Транзакция базы данных</param>
+    /// <param name="importable">Список импортируемых документов</param>
+    /// <param name="issues">Список проблем импорта</param>
+    /// <param name="actions">Словарь действий импорта</param>
     private static async Task WriteImportLogAsync(
         NpgsqlTransaction tx,
         IReadOnlyList<CadDocument> importable,
