@@ -1,3 +1,4 @@
+using Dapper;
 using MiniPdm.Core.Bom;
 
 namespace MiniPdm.Data;
@@ -57,4 +58,21 @@ public sealed class UiReadService
     /// <returns>Карточка объекта</returns>
     public Task<ObjectCard> GetCardAsync(long objectId, CancellationToken ct = default) =>
         _db.ExecuteAsync(conn => _objects.GetCardAsync(objectId, conn), ct);
+    
+    
+    /// <summary>
+    /// Возвращает статус приложения: количество объектов и дату последнего импорта.
+    /// </summary>
+    /// <param name="ct"></param>
+    /// <returns></returns>
+    public Task<AppStatus> GetStatusAsync(CancellationToken ct = default) =>
+        _db.ExecuteAsync(async conn =>
+        {
+            const string sql = """
+                               SELECT (SELECT COUNT(*)::int FROM pdm_object)   AS ObjectsCount,
+                                      (SELECT MAX(started_at) FROM import_log) AS LastImportAt;
+                               """;
+            var row = await conn.QuerySingleAsync<StatusRaw>(sql);
+            return new AppStatus("PostgreSQL", _db.ConnectionSummary, row.ObjectsCount, row.LastImportAt);
+        }, ct);
 }

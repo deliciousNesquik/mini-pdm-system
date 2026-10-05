@@ -11,7 +11,16 @@ public sealed class Db
 
     static Db() => DataConfig.Register();
 
-    public Db(string connectionString) => _connectionString = connectionString;
+    public Db(string connectionString)
+    {
+        _connectionString = connectionString;
+
+        var builder = new NpgsqlConnectionStringBuilder(connectionString);
+        ConnectionSummary = $"{builder.Username ?? "postgres"}@{builder.Host ?? "localhost"}";
+    }
+
+    /// <summary>Краткое представление подключения «user@host» — для статус-строки UI.</summary>
+    public string ConnectionSummary { get; }
 
     public async Task<NpgsqlConnection> OpenConnectionAsync(CancellationToken ct = default)
     {
