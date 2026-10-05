@@ -64,5 +64,21 @@ public static class Strings
     public static string Card_Label_Mass => Get("Card_Label_Mass");
     public static string Card_Label_Material => Get("Card_Label_Material");
     public static string Card_NoActiveVersion => Get("Card_NoActiveVersion");
+    public static string Card_Mass_Hint => Get("Card_Mass_Hint");
+    public static string Card_Composition_Title => Get("Card_Composition_Title");
+    public static string Left_Panel_Title => Get("Left_Panel_Title");
+    public static string Status_Objects => Get("Status_Objects");
+    public static string Status_LastImport => Get("Status_LastImport");
     public static string Tree_Empty => Get("Tree_Empty");
+    public static string Report_File => Get("Report_File");
+    public static string Report_Result => Get("Report_Result");
+    public static string Report_Reason => Get("Report_Reason");
+    public static string Report_Error => Get("Report_Error");
+    public static string Report_Warning => Get("Report_Warning");
+    public static string Summary_Column_Designation => Get("Summary_Column_Designation");
+    public static string Summary_Column_Name => Get("Summary_Column_Name");
+    public static string Summary_Column_Quantity => Get("Summary_Column_Quantity");
+    public static string Summary_Column_UnitMass => Get("Summary_Column_UnitMass");
+    public static string Summary_Column_TotalMass => Get("Summary_Column_TotalMass");
+
 }

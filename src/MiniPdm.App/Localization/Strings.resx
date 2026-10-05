@@ -135,7 +135,52 @@
     <data name="Card_NoActiveVersion" xml:space="preserve">
         <value>Нет действующей версии</value>
     </data>
+    <data name="Card_Mass_Hint" xml:space="preserve">
+        <value>— (нажмите «Рассчитать массу»)</value>
+    </data>
+    <data name="Card_Composition_Title" xml:space="preserve">
+        <value>Состав (1-й уровень)</value>
+    </data>
+    <data name="Left_Panel_Title" xml:space="preserve">
+        <value>Состав изделия</value>
+    </data>
+    <data name="Status_Objects" xml:space="preserve">
+        <value>Объектов</value>
+    </data>
+    <data name="Status_LastImport" xml:space="preserve">
+        <value>Последний импорт</value>
+    </data>
     <data name="Tree_Empty" xml:space="preserve">
         <value>Импортируйте папку, чтобы начать</value>
+    </data>
+    <data name="Report_File" xml:space="preserve">
+        <value>Файл</value>
+    </data>
+    <data name="Report_Result" xml:space="preserve">
+        <value>Результат</value>
+    </data>
+    <data name="Report_Reason" xml:space="preserve">
+        <value>Причина</value>
+    </data>
+    <data name="Report_Error" xml:space="preserve">
+        <value>Ошибка</value>
+    </data>
+    <data name="Report_Warning" xml:space="preserve">
+        <value>Предупреждение</value>
+    </data>
+    <data name="Summary_Column_Designation" xml:space="preserve">
+        <value>Обозначение</value>
+    </data>
+    <data name="Summary_Column_Name" xml:space="preserve">
+        <value>Наименование</value>
+    </data>
+    <data name="Summary_Column_Quantity" xml:space="preserve">
+        <value>Кол-во</value>
+    </data>
+    <data name="Summary_Column_UnitMass" xml:space="preserve">
+        <value>Масса 1 шт., кг</value>
+    </data>
+    <data name="Summary_Column_TotalMass" xml:space="preserve">
+        <value>Масса итого, кг</value>
     </data>
 </root>
