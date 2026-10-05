@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -169,7 +170,7 @@ public partial class MainViewModel : ViewModelBase
             StatusServerText = $"{status.DatabaseKind} {status.ConnectionSummary}";
             StatusObjectsText = $"{Strings.Status_Objects}: {status.ObjectsCount}";
             StatusImportText = status.LastImportAt is { } at
-                ? $"{Strings.Status_LastImport}: {at:dd.MM.yyyy HH:mm}"
+                ? $"{Strings.Status_LastImport}: {FormatLocal(at)}"
                 : $"{Strings.Status_LastImport}: —";
             StatusDbText = null;
         }
@@ -184,6 +185,20 @@ public partial class MainViewModel : ViewModelBase
         {
             HandleError(e);
         }
+    }
+    
+    /// <summary>UTC-момент из БД → локальное время пользователя. Конвертация —
+    /// ответственность отображения: Data возвращает момент, зону знает клиент.</summary>
+    private static string FormatLocal(DateTime utc)
+    {
+        var local = utc.Kind switch
+        {
+            DateTimeKind.Utc => utc.ToLocalTime(),
+            DateTimeKind.Local => utc,
+            // Kind=Unspecified — Npgsql так не отдаёт для timestamptz, но на всякий:
+            _ => DateTime.SpecifyKind(utc, DateTimeKind.Utc).ToLocalTime()
+        };
+        return local.ToString("dd.MM.yyyy HH:mm", CultureInfo.CurrentCulture);
     }
 
     // ---------- импорт ----------
