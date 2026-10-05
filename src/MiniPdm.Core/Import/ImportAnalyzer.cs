@@ -89,9 +89,14 @@ public sealed class ImportAnalyzer
 
         // Масса отсутствует у детали или стандартного изделия - принимаем с предупреждением.
         // У сборки собственная масса не задается вообще, здесь она игнорируется.
-        if (doc.Type != ObjectType.Assembly && doc.MassKg is null)
-            warnings.TryAdd(doc.FileName, "не указана масса");
-
+        if (doc.Type != ObjectType.Assembly)
+        {
+            if (doc.MassKg is null)
+                warnings.TryAdd(doc.FileName, "не указана масса");
+            else if (doc.MassKg <= 0m)
+                AddError(errors, doc.FileName, $"масса должна быть положительной, а не {doc.MassKg}");
+        }
+        
         if (doc.Type != ObjectType.Assembly && doc.Components.Count > 0)
             AddError(errors, doc.FileName, "состав есть, но тип документа не Assembly");
     }

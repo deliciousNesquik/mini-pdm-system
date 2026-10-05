@@ -183,4 +183,16 @@ public sealed class ImportAnalyzerTests
         Assert.Empty(analysis.Cycles);
         Assert.Equal(3, analysis.AcceptedCount);
     }
+    
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void Non_positive_mass_is_rejected(decimal mass)
+    {
+        var analysis = new ImportAnalyzer().Analyze(
+            [Part("Деталь.m3d", "РДЦЛ.304112.301", mass: mass)]);
+
+        Assert.True(Rejected(analysis, "Деталь.m3d"));
+        Assert.Contains(analysis.Issues, i => i.Reason.Contains("положительной"));
+    }
 }
