@@ -40,7 +40,32 @@ public partial class ObjectCardViewModel : ViewModelBase
 
     [ObservableProperty]
     private bool _isBusy;
+    
+    [ObservableProperty]
+    private string? _selectedStateOption;
 
+    partial void OnSelectedStateOptionChanged(string? value)
+    {
+        if (Card?.CurrentState is not { } current) return;
+
+        var target = value switch
+        {
+            var s when s == Strings.State_InWork => ObjectState.InWork,
+            var s when s == Strings.State_Approved => ObjectState.Approved,
+            var s when s == Strings.State_Annulled => ObjectState.Annulled,
+            _ => (ObjectState?)null
+        };
+        
+        if (target is null || target == current) return;
+        if (!StateRules.CanTransition(current, target.Value))
+        {
+            SelectedStateOption = StateDisplay;
+            return;
+        }
+
+        _ = ChangeStateAsync(target.Value);
+    }
+    
     partial void OnCardChanged(ObjectCard? value)
     {
         OnPropertyChanged(nameof(HasSelection));
@@ -140,6 +165,7 @@ public partial class ObjectCardViewModel : ViewModelBase
         try
         {
             Card = await _reads.GetCardAsync(objectId);
+            SelectedStateOption = StateDisplay;   // комбобокс показывает текущее состояние
 
             _massTotal = null; // новая карточка — прошлый расчёт неактуален
             OnPropertyChanged(nameof(MassDisplay));

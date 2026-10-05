@@ -127,8 +127,7 @@
                             <!-- Отображение состояния: смена — только кнопками (правила ядра) -->
                             <ComboBox MinWidth="170"
                                       ItemsSource="{Binding Card.StateOptions}"
-                                      SelectedItem="{Binding Card.StateDisplay}"
-                                      IsHitTestVisible="False" Focusable="False" />
+                                      SelectedItem="{Binding Card.SelectedStateOption, Mode=TwoWay}" />
                             <Button Classes="accent" Content="{loc:Localize Key=State_Approve}"
                                     Command="{Binding Card.ApproveCommand}"
                                     IsVisible="{Binding Card.CanApprove}" />
