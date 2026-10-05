@@ -102,18 +102,22 @@ public sealed class PdmObjectRepository
                              LEFT JOIN object_version ov ON ov.id = po.current_version_id
                             WHERE po.id = @ObjectId;
                            """;
-        var raw = await conn.QuerySingleAsync<CardRaw>(sql, new { ObjectId = objectId }, tx);
+        var raw = await conn.QuerySingleOrDefaultAsync<CardRaw>(sql, new { ObjectId = objectId }, tx);
 
-        return new ObjectCard(
-            raw.Id,
-            Enum.Parse<ObjectType>(raw.Type),
-            raw.Designation,
-            raw.Name,
-            raw.CurrentVersionId,
-            raw.CurrentVersionNo,
-            raw.CurrentState is null ? null : Enum.Parse<ObjectState>(raw.CurrentState),
-            raw.Material,
-            raw.MassKg);
+        // Неизвестный id (плейсхолдер, гонка удаления) — легитимный пустой результат,
+        // а не исключение: VM интерпретирует null как «нет карточки».
+        return raw is null
+            ? ObjectCard.Empty
+            : new ObjectCard(
+                raw.Id,
+                Enum.Parse<ObjectType>(raw.Type),
+                raw.Designation,
+                raw.Name,
+                raw.CurrentVersionId,
+                raw.CurrentVersionNo,
+                raw.CurrentState is null ? null : Enum.Parse<ObjectState>(raw.CurrentState),
+                raw.Material,
+                raw.MassKg);
     }
 
     /// <summary>

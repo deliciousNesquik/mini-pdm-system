@@ -73,6 +73,13 @@
                           ItemsSource="{Binding Roots}"
                           SelectedItem="{Binding SelectedNode}"
                           IsVisible="{Binding !HasNoRoots}">
+                    <TreeView.Styles>
+                        <!-- Клик по стрелке: TreeViewItem.IsExpanded → TreeNodeViewModel.IsExpanded (TwoWay).
+             TreeDataTemplate не имеет IsExpanded — состояние живёт на контейнере. -->
+                        <Style Selector="TreeViewItem">
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                        </Style>
+                    </TreeView.Styles>
                     <TreeView.ItemTemplate>
                         <TreeDataTemplate ItemsSource="{Binding Children}">
                             <StackPanel Orientation="Horizontal" Spacing="4">

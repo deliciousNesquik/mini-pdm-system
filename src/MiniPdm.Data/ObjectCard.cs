@@ -15,6 +15,17 @@ namespace MiniPdm.Data;
 /// <param name="Material">Материал</param>
 /// <param name="MassKg">Масса (кг)</param>
 public sealed record ObjectCard(
-    long Id, ObjectType Type, string? Designation, string Name,
-    long? CurrentVersionId, int? CurrentVersionNo, ObjectState? CurrentState,
-    string? Material, decimal? MassKg);
+    long Id,
+    ObjectType Type,
+    string? Designation,
+    string Name,
+    long? CurrentVersionId,
+    int? CurrentVersionNo,
+    ObjectState? CurrentState,
+    string? Material,
+    decimal? MassKg)
+{
+    public static ObjectCard Empty { get; } = new(0, ObjectType.Part, null, "", null, null, null, null, null);
+}
+    
+    

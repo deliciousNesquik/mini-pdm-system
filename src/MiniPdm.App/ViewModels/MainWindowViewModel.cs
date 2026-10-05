@@ -80,12 +80,7 @@ public partial class MainViewModel : ViewModelBase
 
     partial void OnSelectedNodeChanged(TreeNodeViewModel? value)
     {
-        if (value is null)
-        {
-            Card.Clear();
-            return;
-        }
-
+        if (value is null || value.ObjectId <= 0) return; // плейсхолдер/сброс
         _ = Card.LoadAsync(value.ObjectId);
     }
 
@@ -127,6 +122,7 @@ public partial class MainViewModel : ViewModelBase
     private async Task<IReadOnlyList<TreeNodeViewModel>> LoadChildrenAsync(long parentId)
     {
         var rows = await _reads.GetChildrenAsync(parentId);
+        Log.Information("LazyLoad parentId={ParentId} → {Count} детей", parentId, rows.Count);
         return rows.Select(ToChildNode).ToList();
     }
 
