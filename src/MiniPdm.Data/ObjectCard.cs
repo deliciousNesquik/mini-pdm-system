@@ -3,14 +3,18 @@ using MiniPdm.Core.Domain;
 namespace MiniPdm.Data;
 
 /// <summary>
-/// Представляет элемент списка объектов PDM.
+/// Представляет карточку объекта с его основными свойствами.
 /// </summary>
 /// <param name="Id">Идентификатор</param>
 /// <param name="Type">Тип</param>
 /// <param name="Designation">Обозначение</param>
 /// <param name="Name">Наименование</param>
+/// <param name="CurrentVersionId">Идентификатор текущей версии</param>
 /// <param name="CurrentVersionNo">Номер текущей версии</param>
 /// <param name="CurrentState">Текущее состояние</param>
-public sealed record PdmObjectListItem(
+/// <param name="Material">Материал</param>
+/// <param name="MassKg">Масса (кг)</param>
+public sealed record ObjectCard(
     long Id, ObjectType Type, string? Designation, string Name,
-    int? CurrentVersionNo, ObjectState? CurrentState);
+    long? CurrentVersionId, int? CurrentVersionNo, ObjectState? CurrentState,
+    string? Material, decimal? MassKg);
