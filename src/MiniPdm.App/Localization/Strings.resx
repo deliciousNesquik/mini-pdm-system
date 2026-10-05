@@ -13,13 +13,25 @@
         <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     </resheader>
     <data name="App_Title" xml:space="preserve">
-        <value>Мини-PDM</value>
+        <value>Мини-PDM — Состав изделия</value>
+    </data>
+    <data name="Common_Close" xml:space="preserve">
+        <value>Закрыть</value>
+    </data>
+    <data name="Error_Title" xml:space="preserve">
+        <value>Ошибка</value>
     </data>
     <data name="Import_Folder" xml:space="preserve">
-        <value>Импорт папки</value>
+        <value>Импорт папки…</value>
+    </data>
+    <data name="Import_Folder_Title" xml:space="preserve">
+        <value>Выбор папки с документами</value>
     </data>
     <data name="Import_Cancel" xml:space="preserve">
         <value>Отмена</value>
+    </data>
+    <data name="Import_Cancelled" xml:space="preserve">
+        <value>Импорт отменён. Изменения в базе отсутствуют.</value>
     </data>
     <data name="Import_Report_Title" xml:space="preserve">
         <value>Отчёт об импорте</value>
@@ -33,11 +45,44 @@
     <data name="Import_Warnings" xml:space="preserve">
         <value>Предупреждений</value>
     </data>
+    <data name="Phase_Reading" xml:space="preserve">
+        <value>Чтение файлов</value>
+    </data>
+    <data name="Phase_Analyzing" xml:space="preserve">
+        <value>Анализ</value>
+    </data>
+    <data name="Phase_Writing" xml:space="preserve">
+        <value>Запись</value>
+    </data>
+    <data name="Phase_Committing" xml:space="preserve">
+        <value>Фиксация</value>
+    </data>
+    <data name="Phase_Done" xml:space="preserve">
+        <value>Готово</value>
+    </data>
     <data name="Calc_Mass" xml:space="preserve">
         <value>Рассчитать массу</value>
     </data>
     <data name="Calc_Summary" xml:space="preserve">
         <value>Сводная спецификация</value>
+    </data>
+    <data name="Mass_Result_Title" xml:space="preserve">
+        <value>Масса сборки</value>
+    </data>
+    <data name="Mass_Total" xml:space="preserve">
+        <value>Итоговая масса: {0} кг</value>
+    </data>
+    <data name="Mass_Incomplete_Title" xml:space="preserve">
+        <value>Масса не может быть рассчитана</value>
+    </data>
+    <data name="Mass_NoSelection" xml:space="preserve">
+        <value>Выберите сборку в дереве состава</value>
+    </data>
+    <data name="Mass_Problem_MissingMass" xml:space="preserve">
+        <value>не указана масса</value>
+    </data>
+    <data name="Mass_Problem_NoActiveVersion" xml:space="preserve">
+        <value>нет действующей версии — состав не раскрыт</value>
     </data>
     <data name="Search_Watermark" xml:space="preserve">
         <value>Обозначение или наименование</value>
@@ -48,13 +93,49 @@
     <data name="State_Annull" xml:space="preserve">
         <value>Аннулировать</value>
     </data>
-    <data name="Tree_Empty" xml:space="preserve">
-        <value>Импортируйте папку, чтобы начать</value>
+    <data name="State_InWork" xml:space="preserve">
+        <value>В работе</value>
+    </data>
+    <data name="State_Approved" xml:space="preserve">
+        <value>Утверждено</value>
+    </data>
+    <data name="State_Annulled" xml:space="preserve">
+        <value>Аннулировано</value>
+    </data>
+    <data name="Type_Assembly" xml:space="preserve">
+        <value>Сборка</value>
+    </data>
+    <data name="Type_Part" xml:space="preserve">
+        <value>Деталь</value>
+    </data>
+    <data name="Type_StandardPart" xml:space="preserve">
+        <value>Стандартное изделие</value>
+    </data>
+    <data name="Card_Label_Type" xml:space="preserve">
+        <value>Тип</value>
+    </data>
+    <data name="Card_Label_Designation" xml:space="preserve">
+        <value>Обозначение</value>
+    </data>
+    <data name="Card_Label_Name" xml:space="preserve">
+        <value>Наименование</value>
+    </data>
+    <data name="Card_Label_Version" xml:space="preserve">
+        <value>Версия</value>
+    </data>
+    <data name="Card_Label_State" xml:space="preserve">
+        <value>Состояние</value>
+    </data>
+    <data name="Card_Label_Mass" xml:space="preserve">
+        <value>Масса, кг</value>
+    </data>
+    <data name="Card_Label_Material" xml:space="preserve">
+        <value>Материал</value>
     </data>
     <data name="Card_NoActiveVersion" xml:space="preserve">
         <value>Нет действующей версии</value>
     </data>
-    <data name="Error_Title" xml:space="preserve">
-        <value>Ошибка</value>
+    <data name="Tree_Empty" xml:space="preserve">
+        <value>Импортируйте папку, чтобы начать</value>
     </data>
 </root>
