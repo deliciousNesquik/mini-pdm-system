@@ -122,6 +122,7 @@
 
                         <TextBlock Grid.Row="5" Grid.Column="0" Classes="label"
                                    Text="{loc:Localize Key=Card_Label_State}" />
+                        
                         <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Horizontal" Spacing="8">
                             <!-- Отображение состояния: смена — только кнопками (правила ядра) -->
                             <ComboBox MinWidth="170"
@@ -169,6 +170,9 @@
                 Background="#FAFAFA" BorderBrush="#E0E0E0" BorderThickness="1"
                 CornerRadius="4" Padding="12,6">
             <StackPanel Orientation="Horizontal" Spacing="24">
+                <TextBlock Text="{Binding StatusDbText}"
+                           Foreground="#B3261E"
+                           IsVisible="{Binding StatusDbText, Converter={x:Static ObjectConverters.IsNotNull}}" />
                 <TextBlock Text="{Binding StatusServerText}" Foreground="#6B6B6B" />
                 <TextBlock Text="{Binding StatusObjectsText}" Foreground="#6B6B6B" />
                 <TextBlock Text="{Binding StatusImportText}" Foreground="#6B6B6B" />

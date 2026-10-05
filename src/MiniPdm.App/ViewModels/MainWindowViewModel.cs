@@ -74,6 +74,9 @@ public partial class MainViewModel : ViewModelBase
 
     [ObservableProperty]
     private string _statusImportText = "";
+    
+    [ObservableProperty]
+    private string? _statusDbText;
 
     partial void OnSelectedNodeChanged(TreeNodeViewModel? value)
     {
@@ -140,6 +143,14 @@ public partial class MainViewModel : ViewModelBase
                 : await _reads.SearchAsync(query);
 
             ReplaceRoots(items);
+            StatusDbText = null;
+        }
+        catch (DatabaseUnavailableException e)
+        {
+            StatusServerText = "";
+            StatusObjectsText = "";
+            StatusImportText = "";
+            StatusDbText = e.Message;
         }
         catch (Exception e)
         {
@@ -153,9 +164,7 @@ public partial class MainViewModel : ViewModelBase
         foreach (var item in items) Roots.Add(ToRootNode(item));
         OnPropertyChanged(nameof(HasNoRoots));
     }
-
-    // ---------- статус ----------
-
+    
     private async Task RefreshStatusAsync()
     {
         try
@@ -166,6 +175,14 @@ public partial class MainViewModel : ViewModelBase
             StatusImportText = status.LastImportAt is { } at
                 ? $"{Strings.Status_LastImport}: {at:dd.MM.yyyy HH:mm}"
                 : $"{Strings.Status_LastImport}: —";
+            StatusDbText = null;
+        }
+        catch (DatabaseUnavailableException e)
+        {
+            StatusServerText = "";
+            StatusObjectsText = "";
+            StatusImportText = "";
+            StatusDbText = e.Message;
         }
         catch (Exception e)
         {

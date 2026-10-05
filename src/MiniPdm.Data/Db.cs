@@ -1,3 +1,4 @@
+using System.Net.Sockets;
 using Npgsql;
 
 namespace MiniPdm.Data;
@@ -21,12 +22,20 @@ public sealed class Db
 
     /// <summary>Краткое представление подключения «user@host» — для статус-строки UI.</summary>
     public string ConnectionSummary { get; }
-
+    
     public async Task<NpgsqlConnection> OpenConnectionAsync(CancellationToken ct = default)
     {
         var conn = new NpgsqlConnection(_connectionString);
-        await conn.OpenAsync(ct);
-        return conn;
+        try
+        {
+            await conn.OpenAsync(ct);
+            return conn;
+        }
+        catch (Exception e) when (e is NpgsqlException or SocketException)
+        {
+            throw new DatabaseUnavailableException(
+                "Нет подключения к базе данных. Проверьте доступность БД и проверьте строку подключения.", e);
+        }
     }
 
     /// <summary>
