@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>2.0</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="App_Title" xml:space="preserve">
+        <value>Мини-PDM</value>
+    </data>
+    <data name="Import_Folder" xml:space="preserve">
+        <value>Импорт папки</value>
+    </data>
+    <data name="Import_Cancel" xml:space="preserve">
+        <value>Отмена</value>
+    </data>
+    <data name="Import_Report_Title" xml:space="preserve">
+        <value>Отчёт об импорте</value>
+    </data>
+    <data name="Import_Accepted" xml:space="preserve">
+        <value>Принято</value>
+    </data>
+    <data name="Import_Rejected" xml:space="preserve">
+        <value>Отклонено</value>
+    </data>
+    <data name="Import_Warnings" xml:space="preserve">
+        <value>Предупреждений</value>
+    </data>
+    <data name="Calc_Mass" xml:space="preserve">
+        <value>Рассчитать массу</value>
+    </data>
+    <data name="Calc_Summary" xml:space="preserve">
+        <value>Сводная спецификация</value>
+    </data>
+    <data name="Search_Watermark" xml:space="preserve">
+        <value>Обозначение или наименование</value>
+    </data>
+    <data name="State_Approve" xml:space="preserve">
+        <value>Утвердить</value>
+    </data>
+    <data name="State_Annull" xml:space="preserve">
+        <value>Аннулировать</value>
+    </data>
+    <data name="Tree_Empty" xml:space="preserve">
+        <value>Импортируйте папку, чтобы начать</value>
+    </data>
+    <data name="Card_NoActiveVersion" xml:space="preserve">
+        <value>Нет действующей версии</value>
+    </data>
+    <data name="Error_Title" xml:space="preserve">
+        <value>Ошибка</value>
+    </data>
+</root>
