@@ -1,20 +1,178 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:MiniPdm.App.ViewModels"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:loc="using:MiniPdm.App.Localization"
         x:Class="MiniPdm.App.Views.MainWindow"
-        x:DataType="vm:MainWindowViewModel"
-        Icon="/Assets/avalonia-logo.ico"
-        Title="MiniPdm.App">
+        Title="{loc:Localize Key=App_Title}"
+        Width="1200" Height="760"
+        WindowStartupLocation="CenterScreen">
 
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainWindowViewModel/>
-    </Design.DataContext>
+    <Window.Styles>
+        <Style Selector="TextBlock.h1">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="TextBlock.subtitle">
+            <Setter Property="Foreground" Value="#6B6B6B" />
+            <Setter Property="Margin" Value="0,2,0,12" />
+        </Style>
+        <Style Selector="TextBlock.panelTitle">
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Margin" Value="0,0,0,6" />
+        </Style>
+        <Style Selector="TextBlock.label">
+            <Setter Property="Foreground" Value="#6B6B6B" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="TextBox.cardField">
+            <Setter Property="IsReadOnly" Value="True" />
+            <Setter Property="Background" Value="#F5F5F5" />
+        </Style>
+    </Window.Styles>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <!-- Три строки: тулбар / контент / статус -->
+    <Grid RowDefinitions="Auto,*,Auto" Margin="12">
 
+        <!-- ===== Строка 1: тулбар ===== -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto" Margin="0,0,0,10">
+            <Button Grid.Column="0" Content="{loc:Localize Key=Import_Folder}"
+                    Command="{Binding ImportFolderCommand}" MinWidth="130" />
+            <Button Grid.Column="1" Content="{loc:Localize Key=Calc_Mass}"
+                    Command="{Binding CalcMassCommand}" Margin="8,0,0,0" MinWidth="150" />
+            <Button Grid.Column="2" Content="{loc:Localize Key=Calc_Summary}"
+                    Command="{Binding CalcSummaryCommand}" Margin="8,0,0,0" MinWidth="170" />
+
+            <!-- Прогресс импорта: виден только во время импорта -->
+            <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="8"
+                        VerticalAlignment="Center"
+                        IsVisible="{Binding IsImporting}">
+                <ProgressBar Width="220" Height="6"
+                             Value="{Binding ProgressValue}" Maximum="100"
+                             VerticalAlignment="Center" />
+                <TextBlock Text="{Binding ProgressText}" VerticalAlignment="Center" />
+                <Button Content="{loc:Localize Key=Import_Cancel}"
+                        Command="{Binding CancelImportCommand}" />
+            </StackPanel>
+
+            <!-- Поиск справа -->
+            <TextBox Grid.Column="5" Width="280"
+                     Text="{Binding SearchText}"
+                     Watermark="{loc:Localize Key=Search_Watermark}" />
+        </Grid>
+
+        <!-- ===== Строка 2: состав изделия | карточка ===== -->
+        <Grid Grid.Row="1" ColumnDefinitions="1.1*,Auto,1.8*">
+
+            <!-- Левая панель: дерево -->
+            <Grid Grid.Column="0" RowDefinitions="Auto,*">
+                <TextBlock Grid.Row="0" Classes="panelTitle"
+                           Text="{loc:Localize Key=Left_Panel_Title}" />
+                <TextBlock Grid.Row="1" Text="{loc:Localize Key=Tree_Empty}"
+                           Foreground="#6B6B6B"
+                           IsVisible="{Binding HasNoRoots}" />
+                <TreeView Grid.Row="1"
+                          ItemsSource="{Binding Roots}"
+                          SelectedItem="{Binding SelectedNode}"
+                          IsVisible="{Binding !HasNoRoots}">
+                    <TreeView.ItemTemplate>
+                        <TreeDataTemplate ItemsSource="{Binding Children}">
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock Text="{Binding Display}" />
+                                <TextBlock Text="{Binding QuantityText}" Foreground="#6B6B6B" />
+                            </StackPanel>
+                        </TreeDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+            </Grid>
+
+            <!-- Вертикальный разделитель -->
+            <Border Grid.Column="1" Width="1" Margin="10,0"
+                    Background="#E0E0E0" />
+
+            <!-- Правая панель: карточка -->
+            <ScrollViewer Grid.Column="2" Margin="10,0,0,0">
+                <StackPanel IsVisible="{Binding Card.HasSelection}" Spacing="10">
+                    <TextBlock Classes="h1" Text="{Binding Card.Card.Name}" />
+                    <TextBlock Classes="subtitle" Text="{Binding Card.Subtitle}" />
+
+                    <Grid ColumnDefinitions="170,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+                        <TextBlock Grid.Row="0" Grid.Column="0" Classes="label"
+                                   Text="{loc:Localize Key=Card_Label_Designation}" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Classes="cardField"
+                                 Text="{Binding Card.Card.Designation}" Margin="0,0,0,6" />
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" Classes="label"
+                                   Text="{loc:Localize Key=Card_Label_Name}" />
+                        <TextBox Grid.Row="1" Grid.Column="1" Classes="cardField"
+                                 Text="{Binding Card.Card.Name}" Margin="0,0,0,6" />
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" Classes="label"
+                                   Text="{loc:Localize Key=Card_Label_Type}" />
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Card.TypeDisplay}"
+                                   VerticalAlignment="Center" Margin="0,0,0,6" />
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Classes="label"
+                                   Text="{loc:Localize Key=Card_Label_Version}" />
+                        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Card.VersionDisplay}"
+                                   VerticalAlignment="Center" Margin="0,0,0,6" />
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" Classes="label"
+                                   Text="{loc:Localize Key=Card_Label_Mass}" />
+                        <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Card.MassDisplay}"
+                                   VerticalAlignment="Center" Margin="0,0,0,6" />
+
+                        <TextBlock Grid.Row="5" Grid.Column="0" Classes="label"
+                                   Text="{loc:Localize Key=Card_Label_State}" />
+                        <StackPanel Grid.Row="5" Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                            <!-- Отображение состояния: смена — только кнопками (правила ядра) -->
+                            <ComboBox MinWidth="170"
+                                      ItemsSource="{Binding Card.StateOptions}"
+                                      SelectedItem="{Binding Card.StateDisplay}"
+                                      IsHitTestVisible="False" Focusable="False" />
+                            <Button Classes="accent" Content="{loc:Localize Key=State_Approve}"
+                                    Command="{Binding Card.ApproveCommand}"
+                                    IsVisible="{Binding Card.CanApprove}" />
+                            <Button Content="{loc:Localize Key=State_Annull}"
+                                    Command="{Binding Card.AnnulCommand}"
+                                    IsVisible="{Binding Card.CanAnnul}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Separator Margin="0,6,0,6" />
+
+                    <!-- Состав (1-й уровень) -->
+                    <StackPanel IsVisible="{Binding Card.HasComposition}">
+                        <TextBlock Classes="panelTitle"
+                                   Text="{loc:Localize Key=Card_Composition_Title}" />
+                        <DataGrid AutoGenerateColumns="False"
+                                  CanUserResizeColumns="True"
+                                  HeadersVisibility="Column"
+                                  ItemsSource="{Binding Card.Composition}"
+                                  MaxHeight="360">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{loc:Localize Key=Summary_Column_Designation}"
+                                                    Binding="{Binding Designation}" Width="*" />
+                                <DataGridTextColumn Header="{loc:Localize Key=Summary_Column_Name}"
+                                                    Binding="{Binding Name}" Width="2*" />
+                                <DataGridTextColumn Header="{loc:Localize Key=Summary_Column_Quantity}"
+                                                    Binding="{Binding Quantity}" Width="90" />
+                                <DataGridTextColumn Header="{loc:Localize Key=Summary_Column_UnitMass}"
+                                                    Binding="{Binding UnitMass}" Width="140" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- ===== Строка 3: статус ===== -->
+        <Border Grid.Row="2" Margin="0,10,0,0"
+                Background="#FAFAFA" BorderBrush="#E0E0E0" BorderThickness="1"
+                CornerRadius="4" Padding="12,6">
+            <StackPanel Orientation="Horizontal" Spacing="24">
+                <TextBlock Text="{Binding StatusServerText}" Foreground="#6B6B6B" />
+                <TextBlock Text="{Binding StatusObjectsText}" Foreground="#6B6B6B" />
+                <TextBlock Text="{Binding StatusImportText}" Foreground="#6B6B6B" />
+            </StackPanel>
+        </Border>
+    </Grid>
 </Window>

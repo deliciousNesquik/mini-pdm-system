@@ -1,0 +1,14 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="MiniPdm.App.Views.MessageWindow"
+        CanResize="False"
+        SizeToContent="Height"
+        Width="480"
+        WindowStartupLocation="CenterOwner"
+        xmlns:loc="using:MiniPdm.App.Localization">
+    <StackPanel Margin="16" Spacing="12">
+        <TextBlock x:Name="TextBlock" TextWrapping="Wrap" />
+        <Button x:Name="OkButton" Content="{loc:Localize Key=Common_Close}"
+                HorizontalAlignment="Right" MinWidth="96" />
+    </StackPanel>
+</Window>

@@ -15,6 +15,8 @@ namespace MiniPdm.App;
 [Singleton(typeof(VersionService))]
 [Singleton(typeof(PdmObjectRepository))]
 [Singleton(typeof(BomRepository))]
+[Singleton(typeof(UiReadService))]
+[Singleton(typeof(PdmStateService))]
 internal partial class AppServices
 {
     /// <summary>

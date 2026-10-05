@@ -15,10 +15,9 @@ using Serilog;
 
 namespace MiniPdm.App.ViewModels;
 
-/// <summary>Главный экран: корни дерева + ленивое раскрытие, поиск, импорт
-/// с прогрессом и отменой, карточка, расчёты. UI-события (диалоги, окна отчётов)
-/// — события MessageRequested / ImportCompleted / SummaryRequested; подписчик — View.
-/// Никакого Npgsql: чтение — UiReadService, запись — оркестраторы Data.</summary>
+/// <summary>Главный экран по мокапу ТЗ: тулбар (кнопки + поиск + прогресс),
+/// слева дерево состава, справа карточка с составом 1-го уровня, снизу статус.
+/// События MessageRequested / ImportCompleted / SummaryRequested — точки диалогов View.</summary>
 public partial class MainViewModel : ViewModelBase
 {
     private readonly UiReadService _reads;
@@ -41,13 +40,8 @@ public partial class MainViewModel : ViewModelBase
 
     public ObjectCardViewModel Card { get; }
 
-    /// <summary>Заголовок сообщения / текст. Подписчик: MainWindow (шаг 3).</summary>
     public event Action<string, string>? MessageRequested;
-
-    /// <summary>Импорт завершён — View показывает окно отчёта (рисунок 2 ТЗ).</summary>
     public event Action<ImportAnalysis>? ImportCompleted;
-
-    /// <summary>Запрошена сводная спецификация — View показывает таблицу.</summary>
     public event Action<IReadOnlyList<SummaryLine>>? SummaryRequested;
 
     public ObservableCollection<TreeNodeViewModel> Roots { get; } = [];
@@ -71,6 +65,16 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty]
     private double _progressValue;
 
+    // Статус-строка
+    [ObservableProperty]
+    private string _statusServerText = "";
+
+    [ObservableProperty]
+    private string _statusObjectsText = "";
+
+    [ObservableProperty]
+    private string _statusImportText = "";
+
     partial void OnSelectedNodeChanged(TreeNodeViewModel? value)
     {
         if (value is null)
@@ -79,13 +83,17 @@ public partial class MainViewModel : ViewModelBase
             return;
         }
 
-        _ = Card.LoadAsync(value.ObjectId); // ошибки маршрутизируются внутри CardViewModel
+        _ = Card.LoadAsync(value.ObjectId);
     }
 
     partial void OnSearchTextChanged(string value) => _ = ApplySearchAsync(value);
 
-    /// <summary>Вызывается из App после создания окна: начальная загрузка корней.</summary>
-    public Task InitializeAsync() => ApplySearchAsync(SearchText);
+    /// <summary>Начальная загрузка: корни дерева и статус (зывает MainWindow).</summary>
+    public async Task InitializeAsync()
+    {
+        await ApplySearchAsync(SearchText);
+        await RefreshStatusAsync();
+    }
 
     // ---------- дерево ----------
 
@@ -123,7 +131,7 @@ public partial class MainViewModel : ViewModelBase
     {
         var sequence = ++_searchSequence;
         await Task.Delay(250); // debounce набора текста
-        if (sequence != _searchSequence) return; // устаревший запрос — молча пропустить
+        if (sequence != _searchSequence) return;
 
         try
         {
@@ -146,6 +154,25 @@ public partial class MainViewModel : ViewModelBase
         OnPropertyChanged(nameof(HasNoRoots));
     }
 
+    // ---------- статус ----------
+
+    private async Task RefreshStatusAsync()
+    {
+        try
+        {
+            var status = await _reads.GetStatusAsync();
+            StatusServerText = $"{status.DatabaseKind} {status.ConnectionSummary}";
+            StatusObjectsText = $"{Strings.Status_Objects}: {status.ObjectsCount}";
+            StatusImportText = status.LastImportAt is { } at
+                ? $"{Strings.Status_LastImport}: {at:dd.MM.yyyy HH:mm}"
+                : $"{Strings.Status_LastImport}: —";
+        }
+        catch (Exception e)
+        {
+            HandleError(e);
+        }
+    }
+
     // ---------- импорт ----------
 
     private bool CanRunImport() => !IsImporting;
@@ -162,8 +189,6 @@ public partial class MainViewModel : ViewModelBase
         IsImporting = true;
         try
         {
-            // Progress<T> захватывает SynchronizationContext на момент создания
-            // (UI-поток) — Report маршализуется сам, диспетчеризация вручную не нужна.
             var progress = new Progress<ImportProgress>(ReportProgress);
             var analysis = await _import.ImportFolderAsync(folder, progress, _importCts.Token);
 
@@ -171,7 +196,8 @@ public partial class MainViewModel : ViewModelBase
                 analysis.AcceptedCount, analysis.RejectedCount, analysis.WarningCount);
 
             ImportCompleted?.Invoke(analysis);
-            await ApplySearchAsync(SearchText); // дерево могло обновиться
+            await ApplySearchAsync(SearchText);
+            await RefreshStatusAsync(); // число объектов и время импорта изменились
         }
         catch (OperationCanceledException)
         {
@@ -215,6 +241,8 @@ public partial class MainViewModel : ViewModelBase
 
     // ---------- расчёты ----------
 
+    /// <summary>Масса выбранной сборки: итог показывается в поле «Масса, кг» карточки;
+    /// неполная сумма — диалогом с перечнем виновников (ТЗ: не вернуть неполную сумму).</summary>
     [RelayCommand]
     private async Task CalcMassAsync()
     {
@@ -231,12 +259,10 @@ public partial class MainViewModel : ViewModelBase
 
             if (calc.TotalMassKg is { } total)
             {
-                MessageRequested?.Invoke(Strings.Mass_Result_Title,
-                    string.Format(Strings.Mass_Total, total.ToString("0.####")));
+                Card.SetMass(total);
             }
             else
             {
-                // ТЗ: назвать виновников, а не вернуть неполную сумму.
                 var lines = calc.Problems
                     .Select(p => $"{p.Display} — {ReasonOf(p.Kind)}");
                 MessageRequested?.Invoke(Strings.Mass_Incomplete_Title,

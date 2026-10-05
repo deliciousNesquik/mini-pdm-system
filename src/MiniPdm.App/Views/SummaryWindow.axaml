@@ -1,0 +1,34 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="using:MiniPdm.App.Localization"
+        x:Class="MiniPdm.App.Views.SummaryWindow"
+        Title="{loc:Localize Key=Calc_Summary}"
+        Width="760" Height="500"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True">
+
+    <Grid RowDefinitions="*,Auto" Margin="16">
+        <DataGrid Grid.Row="0"
+                  AutoGenerateColumns="False"
+                  CanUserResizeColumns="True"
+                  HeadersVisibility="Column"
+                  ItemsSource="{Binding Lines}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="{loc:Localize Key=Summary_Column_Designation}"
+                                    Binding="{Binding Designation}" Width="*" />
+                <DataGridTextColumn Header="{loc:Localize Key=Summary_Column_Name}"
+                                    Binding="{Binding Name}" Width="2*" />
+                <DataGridTextColumn Header="{loc:Localize Key=Summary_Column_Quantity}"
+                                    Binding="{Binding TotalQuantity}" Width="100" />
+                <DataGridTextColumn Header="{loc:Localize Key=Summary_Column_UnitMass}"
+                                    Binding="{Binding UnitMass}" Width="140" />
+                <DataGridTextColumn Header="{loc:Localize Key=Summary_Column_TotalMass}"
+                                    Binding="{Binding TotalMass}" Width="140" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button Content="{loc:Localize Key=Common_Close}" Click="OnClose" MinWidth="96" />
+        </StackPanel>
+    </Grid>
+</Window>

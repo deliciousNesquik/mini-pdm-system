@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -8,21 +10,30 @@ using MiniPdm.Data;
 
 namespace MiniPdm.App.ViewModels;
 
-/// <summary>
-/// ViewModel для карточки объекта в правой панели.
-/// </summary>
+/// <summary>Правая панель: карточка выбранного объекта, кнопки смены состояния
+/// и секция «Состав (1-й уровень)». Масса сборки заполняется на месте по команде
+/// «Рассчитать массу» (SetMass); неполная сумма уходит диалогом через MainViewModel.
+/// Активность кнопок — чистые правила StateRules; исполнение — PdmStateService.</summary>
 public partial class ObjectCardViewModel : ViewModelBase
 {
     private readonly UiReadService _reads;
     private readonly PdmStateService _state;
     private readonly Action<Exception> _onError;
+    private decimal? _massTotal;
 
     public ObjectCardViewModel(UiReadService reads, PdmStateService state, Action<Exception> onError)
     {
         _reads = reads;
         _state = state;
         _onError = onError;
+        StateOptions = new[] { Strings.State_InWork, Strings.State_Approved, Strings.State_Annulled };
     }
+
+    /// <summary>Опции комбобокса состояния (только отображение; смена — кнопками).</summary>
+    public IReadOnlyList<string> StateOptions { get; }
+
+    /// <summary>Строки секции «Состав (1-й уровень)».</summary>
+    public ObservableCollection<CompositionRow> Composition { get; } = [];
 
     [ObservableProperty]
     private ObjectCard? _card;
@@ -32,6 +43,8 @@ public partial class ObjectCardViewModel : ViewModelBase
 
     partial void OnCardChanged(ObjectCard? value)
     {
+        OnPropertyChanged(nameof(HasSelection));
+        OnPropertyChanged(nameof(Subtitle));
         OnPropertyChanged(nameof(TypeDisplay));
         OnPropertyChanged(nameof(VersionDisplay));
         OnPropertyChanged(nameof(StateDisplay));
@@ -39,10 +52,13 @@ public partial class ObjectCardViewModel : ViewModelBase
         OnPropertyChanged(nameof(MaterialDisplay));
         OnPropertyChanged(nameof(CanApprove));
         OnPropertyChanged(nameof(CanAnnul));
-        OnPropertyChanged(nameof(HasSelection));
+        OnPropertyChanged(nameof(HasComposition));
     }
 
     public bool HasSelection => Card is not null;
+
+    /// <summary>Подзаголовок карточки: «ОБОЗНАЧЕНИЕ · Тип».</summary>
+    public string Subtitle => Card is null ? "" : $"{Card.Designation ?? "—"} · {TypeDisplay}";
 
     public string TypeDisplay => Card is null ? "" : Card.Type switch
     {
@@ -64,7 +80,19 @@ public partial class ObjectCardViewModel : ViewModelBase
         _ => "—"
     };
 
-    public string MassDisplay => Card?.MassKg is null ? "—" : $"{Card.MassKg:0.####}";
+    /// <summary>Масса: у сборки — «— (нажмите «Рассчитать массу»)» до расчёта,
+    /// затем рассчитанный итог; у детали/стандартного — значение из БД, «—» если нет.</summary>
+    public string MassDisplay
+    {
+        get
+        {
+            if (Card is null) return "";
+            if (Card.Type == ObjectType.Assembly)
+                return _massTotal?.ToString("0.####") ?? Strings.Card_Mass_Hint;
+            return Card.MassKg?.ToString("0.####") ?? "—";
+        }
+    }
+
     public string MaterialDisplay => Card?.Material is null ? "—" : Card.Material;
 
     public bool CanApprove =>
@@ -72,6 +100,10 @@ public partial class ObjectCardViewModel : ViewModelBase
 
     public bool CanAnnul =>
         Card?.CurrentState is { } annulFrom && StateRules.CanTransition(annulFrom, ObjectState.Annulled);
+
+    /// <summary>Секция состава видима только у сборок с непустым составом.</summary>
+    public bool HasComposition =>
+        Card is { } card && card.Type == ObjectType.Assembly && Composition.Count > 0;
 
     [RelayCommand]
     private async Task ApproveAsync() => await ChangeStateAsync(ObjectState.Approved);
@@ -89,7 +121,7 @@ public partial class ObjectCardViewModel : ViewModelBase
         try
         {
             await _state.ChangeStateAsync(versionId, to);
-            await LoadAsync(card.Id); // перечитать карточку после смены состояния
+            await LoadAsync(card.Id);
         }
         catch (Exception e)
         {
@@ -101,16 +133,32 @@ public partial class ObjectCardViewModel : ViewModelBase
         }
     }
 
-    /// <summary>
-    /// Загрузить карточку объекта по идентификатору.
-    /// </summary>
-    /// <param name="objectId">Идентификатор объекта.</param>
+    /// <summary>Загружает карточку и состав 1-го уровня по id выбранного узла.</summary>
     public async Task LoadAsync(long objectId)
     {
         IsBusy = true;
         try
         {
             Card = await _reads.GetCardAsync(objectId);
+
+            _massTotal = null; // новая карточка — прошлый расчёт неактуален
+            OnPropertyChanged(nameof(MassDisplay));
+
+            Composition.Clear();
+            if (Card.Type == ObjectType.Assembly)
+            {
+                var children = await _reads.GetChildrenAsync(objectId);
+                foreach (var child in children)
+                {
+                    Composition.Add(new CompositionRow(
+                        child.Designation ?? "—",
+                        child.Name,
+                        child.QuantityOnPath,
+                        child.UnitMassKg?.ToString("0.####") ?? "")); // пустая масса — по ТЗ
+                }
+            }
+
+            OnPropertyChanged(nameof(HasComposition));
         }
         catch (Exception e)
         {
@@ -122,8 +170,23 @@ public partial class ObjectCardViewModel : ViewModelBase
         }
     }
 
-    /// <summary>
-    /// Очистить карточку объекта.
-    /// </summary>
-    public void Clear() => Card = null;
+    /// <summary>Заполняет поле «Масса, кг» рассчитанным итогом (MainViewModel после BomCalculator).</summary>
+    public void SetMass(decimal? totalKg)
+    {
+        _massTotal = totalKg;
+        OnPropertyChanged(nameof(MassDisplay));
+    }
+
+    /// <summary>Сброс при снятии выделения.</summary>
+    public void Clear()
+    {
+        Card = null;
+        _massTotal = null;
+        Composition.Clear();
+        OnPropertyChanged(nameof(MassDisplay));
+        OnPropertyChanged(nameof(HasComposition));
+    }
+
+    /// <summary>Строка состава 1-го уровня: обозначение, наименование, кол-во, масса 1 шт.</summary>
+    public sealed record CompositionRow(string Designation, string Name, int Quantity, string UnitMass);
 }

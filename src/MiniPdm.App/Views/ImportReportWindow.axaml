@@ -1,0 +1,48 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="using:MiniPdm.App.Localization"
+        x:Class="MiniPdm.App.Views.ImportReportWindow"
+        Title="{loc:Localize Key=Import_Report_Title}"
+        Width="760" Height="500"
+        WindowStartupLocation="CenterOwner"
+        CanResize="True">
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="16">
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="12">
+            <Border CornerRadius="12" Padding="12,4" Background="#E6F4EA">
+                <TextBlock Foreground="#1E7B34">
+                    <Run Text="{loc:Localize Key=Import_Accepted}"/><Run Text=": "/><Run Text="{Binding Accepted}"/>
+                </TextBlock>
+            </Border>
+            <Border CornerRadius="12" Padding="12,4" Background="#FDE7E9">
+                <TextBlock Foreground="#B3261E">
+                    <Run Text="{loc:Localize Key=Import_Rejected}"/><Run Text=": "/><Run Text="{Binding Rejected}"/>
+                </TextBlock>
+            </Border>
+            <Border CornerRadius="12" Padding="12,4" Background="#FFF4CE">
+                <TextBlock Foreground="#8A6D00">
+                    <Run Text="{loc:Localize Key=Import_Warnings}"/><Run Text=": "/><Run Text="{Binding Warnings}"/>
+                </TextBlock>
+            </Border>
+        </StackPanel>
+
+        <DataGrid Grid.Row="1" Margin="0,12,0,0"
+                  AutoGenerateColumns="False"
+                  CanUserResizeColumns="True"
+                  HeadersVisibility="Column"
+                  ItemsSource="{Binding Issues}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="{loc:Localize Key=Report_File}"
+                                    Binding="{Binding FileName}" Width="2*" />
+                <DataGridTextColumn Header="{loc:Localize Key=Report_Result}"
+                                    Binding="{Binding Result}" Width="160" />
+                <DataGridTextColumn Header="{loc:Localize Key=Report_Reason}"
+                                    Binding="{Binding Reason}" Width="4*" />
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button Content="{loc:Localize Key=Common_Close}" Click="OnClose" MinWidth="96" />
+        </StackPanel>
+    </Grid>
+</Window>

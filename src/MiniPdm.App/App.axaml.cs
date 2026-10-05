@@ -1,15 +1,15 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Data.Core;
-using Avalonia.Data.Core.Plugins;
-using System.Linq;
 using Avalonia.Markup.Xaml;
+using MiniPdm.App.Localization;
 using MiniPdm.App.ViewModels;
 using MiniPdm.App.Views;
+using MiniPdm.Data;
+using Serilog;
 
 namespace MiniPdm.App;
 
-public partial class App : Application
+public class App : Application
 {
     public override void Initialize()
     {
@@ -20,10 +20,20 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow
+            // Единый composition: контейнер Jab + делегат выбора папки из окна.
+            var services = new AppServices();
+
+            var window = new MainWindow
             {
-                DataContext = new MainWindowViewModel(),
+                DataContext = new MainViewModel(
+                    services.GetService<UiReadService>(),
+                    services.GetService<ImportService>(),
+                    services.GetService<PdmStateService>(),
+                    pickFolder: () => Views.MainWindow.PickFolderAsync(desktop.MainWindow!))
             };
+
+            Log.Information("Главное окно создано");
+            desktop.MainWindow = window;
         }
 
         base.OnFrameworkInitializationCompleted();
