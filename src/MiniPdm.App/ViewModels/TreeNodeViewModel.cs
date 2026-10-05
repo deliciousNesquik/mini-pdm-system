@@ -73,7 +73,7 @@ public partial class TreeNodeViewModel : ViewModelBase
     public bool HasChildren { get; }
 
     public string Display => Designation is null ? Name : $"{Designation}   {Name}";
-    public string QuantityText => Quantity > 1 ? $" ×{Quantity}" : "";
+    public string QuantityText => $" ×{Quantity}";
     public bool IsInactive => !HasActiveVersion;
 
     [ObservableProperty]
