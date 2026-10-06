@@ -183,4 +183,20 @@
     <data name="Summary_Column_TotalMass" xml:space="preserve">
         <value>Масса итого, кг</value>
     </data>
+
+    <data name="Report_Folder" xml:space="preserve">
+        <value>Папка</value>
+    </data>
+    <data name="Report_Filter_All" xml:space="preserve">
+        <value>Показать: все</value>
+    </data>
+    <data name="Report_Filter_Errors" xml:space="preserve">
+        <value>Показать: только ошибки</value>
+    </data>
+    <data name="Report_Filter_Warnings" xml:space="preserve">
+        <value>Показать: только предупреждения</value>
+    </data>
+    <data name="Report_SaveToFile" xml:space="preserve">
+        <value>Сохранить в файл</value>
+    </data>
 </root>

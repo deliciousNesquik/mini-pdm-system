@@ -80,5 +80,10 @@ public static class Strings
     public static string Summary_Column_Quantity => Get("Summary_Column_Quantity");
     public static string Summary_Column_UnitMass => Get("Summary_Column_UnitMass");
     public static string Summary_Column_TotalMass => Get("Summary_Column_TotalMass");
+    public static string Report_Folder => Get("Report_Folder");
+    public static string Report_Filter_All => Get("Report_Filter_All");
+    public static string Report_Filter_Errors => Get("Report_Filter_Errors");
+    public static string Report_Filter_Warnings => Get("Report_Filter_Warnings");
+    public static string Report_SaveToFile => Get("Report_SaveToFile");
 
 }

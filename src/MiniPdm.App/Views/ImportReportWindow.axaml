@@ -1,48 +1,220 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:loc="using:MiniPdm.App.Localization"
+        xmlns:vm="using:MiniPdm.App.ViewModels"
         x:Class="MiniPdm.App.Views.ImportReportWindow"
+        x:DataType="vm:ImportReportViewModel"
         Title="{loc:Localize Key=Import_Report_Title}"
-        Width="760" Height="500"
+        Width="760" Height="500" MinWidth="640" MinHeight="420"
+        FontSize="13"
         WindowStartupLocation="CenterOwner"
         CanResize="True">
+    
+    <Design.DataContext>
+        <vm:ImportReportViewModel />
+    </Design.DataContext>
+    
+    <Window.Styles>
+        <Style Selector="Button">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="Foreground" Value="#1F1F1F" />
+            <Setter Property="BorderBrush" Value="#C9C9C9" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="MinHeight" Value="34" />
+            <Setter Property="Padding" Value="14,6,14,6" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F3F4F6" />
+            <Setter Property="BorderBrush" Value="#BDBDBD" />
+            <Setter Property="Foreground" Value="#1F1F1F" />
+        </Style>
+        <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#E8E9EB" />
+            <Setter Property="Foreground" Value="#1F1F1F" />
+        </Style>
+        <Style Selector="Button:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#F7F7F7" />
+            <Setter Property="BorderBrush" Value="#E3E3E3" />
+            <Setter Property="Foreground" Value="#A6A6A6" />
+        </Style>
+        
+        <Style Selector="Button.accent">
+            <Setter Property="Background" Value="#2563EB" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderBrush" Value="#2563EB" />
+        </Style>
+        <Style Selector="Button.accent:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#1D4ED8" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="Button.accent:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#1E40AF" />
+            <Setter Property="Foreground" Value="White" />
+        </Style>
+        <Style Selector="Button.accent:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="#9DBCF7" />
+            <Setter Property="Foreground" Value="#F4F6FB" />
+        </Style>
+        
+        <Style Selector="ComboBox">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="BorderBrush" Value="#C9C9C9" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="MinHeight" Value="34" />
+            <Setter Property="Padding" Value="12,6,8,6" />
+        </Style>
+        
+        <Style Selector="DataGrid">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="RowBackground" Value="White" />
+            <Setter Property="RowHeight" Value="38" />
+            <Setter Property="HorizontalGridLinesBrush" Value="#E6E6E6" />
+        </Style>
+        <Style Selector="DataGridColumnHeader">
+            <Setter Property="Background" Value="#ECECEC" />
+            <Setter Property="Foreground" Value="#1F1F1F" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Padding" Value="12,9,12,9" />
+            <Setter Property="MinHeight" Value="40" />
+            <Setter Property="SeparatorBrush" Value="Transparent" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="DataGridColumnHeader:pointerover">
+            <Setter Property="Background" Value="#ECECEC" />
+        </Style>
+        <Style Selector="DataGridCell">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="12,0,12,0" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style Selector="DataGridCell:focus">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
 
-    <Grid RowDefinitions="Auto,*,Auto" Margin="16">
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="12">
-            <Border CornerRadius="12" Padding="12,4" Background="#E6F4EA">
-                <TextBlock Foreground="#1E7B34">
+        <Style Selector="DataGridCell TextBlock">
+            <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        </Style>
+        <Style Selector="DataGridRow">
+            <Setter Property="Background" Value="White" />
+        </Style>
+        <Style Selector="DataGridRow:pointerover">
+            <Setter Property="Background" Value="#F4F7FE" />
+        </Style>
+        <Style Selector="DataGridRow:selected">
+            <Setter Property="Background" Value="#DCE7FB" />
+            <Setter Property="Foreground" Value="#1F1F1F" />
+        </Style>
+        <Style Selector="DataGridRow:selected:pointerover">
+            <Setter Property="Background" Value="#DCE7FB" />
+            <Setter Property="Foreground" Value="#1F1F1F" />
+        </Style>
+        <Style Selector="DataGridRow:selected /template/ Border#DGR_Border">
+            <Setter Property="Background" Value="#DCE7FB" />
+        </Style>
+    </Window.Styles>
+
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto,Auto">
+
+        <Border Grid.Row="0" Background="#F0F1F3" Padding="16,10,16,10">
+            <TextBlock FontSize="15" FontWeight="SemiBold" TextWrapping="Wrap"
+                       Text="{loc:Localize Key=Import_Report_Title}" />
+        </Border>
+
+        <TextBlock Grid.Row="1" Foreground="#757575" Margin="16,10,16,0" TextWrapping="Wrap">
+            <Run Text="{loc:Localize Key=Report_Folder}"/><Run Text=": "/><Run Text="{Binding Folder, FallbackValue=''}"/>
+        </TextBlock>
+
+        <WrapPanel Grid.Row="2" Margin="16,10,6,2">
+            <Border CornerRadius="14" Padding="14,5" Background="#E6F4EA" Margin="0,0,10,8">
+                <TextBlock FontWeight="SemiBold" Foreground="#1E7B34">
                     <Run Text="{loc:Localize Key=Import_Accepted}"/><Run Text=": "/><Run Text="{Binding Accepted}"/>
                 </TextBlock>
             </Border>
-            <Border CornerRadius="12" Padding="12,4" Background="#FDE7E9">
-                <TextBlock Foreground="#B3261E">
+            <Border CornerRadius="14" Padding="14,5" Background="#FDE7E9" Margin="0,0,10,8">
+                <TextBlock FontWeight="SemiBold" Foreground="#B3261E">
                     <Run Text="{loc:Localize Key=Import_Rejected}"/><Run Text=": "/><Run Text="{Binding Rejected}"/>
                 </TextBlock>
             </Border>
-            <Border CornerRadius="12" Padding="12,4" Background="#FFF4CE">
-                <TextBlock Foreground="#8A6D00">
+            <Border CornerRadius="14" Padding="14,5" Background="#FFF4CE" Margin="0,0,10,8">
+                <TextBlock FontWeight="SemiBold" Foreground="#8A6D00">
                     <Run Text="{loc:Localize Key=Import_Warnings}"/><Run Text=": "/><Run Text="{Binding Warnings}"/>
                 </TextBlock>
             </Border>
-        </StackPanel>
+        </WrapPanel>
 
-        <DataGrid Grid.Row="1" Margin="0,12,0,0"
+        <DataGrid Grid.Row="3" Margin="16,12,16,0"
                   AutoGenerateColumns="False"
+                  IsReadOnly="True"
                   CanUserResizeColumns="True"
                   HeadersVisibility="Column"
-                  ItemsSource="{Binding Issues}">
+                  GridLinesVisibility="Horizontal"
+                  ItemsSource="{Binding FilteredIssues}">
             <DataGrid.Columns>
+
+                <DataGridTemplateColumn Width="40" CanUserResize="False" CanUserSort="False">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Panel>
+                                <Path Data="M1.5,1.5 L10.5,10.5 M10.5,1.5 L1.5,10.5"
+                                      Stroke="#D93025" StrokeThickness="1.8"
+                                      StrokeLineCap="Round" StrokeJoin="Round"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center"
+                                      IsVisible="{Binding Result, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='Ошибка'}" />
+                                <Path Data="M7.5,1.5 L14,13 L1,13 Z M7.5,5.5 L7.5,9 M7.5,11 L7.5,11.2"
+                                      Stroke="#E37400" StrokeThickness="1.5"
+                                      StrokeLineCap="Round" StrokeJoin="Round"
+                                      HorizontalAlignment="Center" VerticalAlignment="Center"
+                                      IsVisible="{Binding Result, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='Предупреждение'}" />
+                            </Panel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
                 <DataGridTextColumn Header="{loc:Localize Key=Report_File}"
-                                    Binding="{Binding FileName}" Width="2*" />
-                <DataGridTextColumn Header="{loc:Localize Key=Report_Result}"
-                                    Binding="{Binding Result}" Width="160" />
+                                    Binding="{Binding FileName}" Width="1.6*" MinWidth="150" />
+
+                <DataGridTemplateColumn Header="{loc:Localize Key=Report_Result}"
+                                        Width="150" SortMemberPath="Result">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Panel>
+                                <TextBlock Text="{Binding Result}" Foreground="#1F1F1F"
+                                           TextTrimming="CharacterEllipsis" />
+                                <TextBlock Text="{Binding Result}" Foreground="#B3261E"
+                                           TextTrimming="CharacterEllipsis"
+                                           IsVisible="{Binding Result, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='Ошибка'}" />
+                                <TextBlock Text="{Binding Result}" Foreground="#8A6D00"
+                                           TextTrimming="CharacterEllipsis"
+                                           IsVisible="{Binding Result, Converter={x:Static ObjectConverters.Equal}, ConverterParameter='Предупреждение'}" />
+                            </Panel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
                 <DataGridTextColumn Header="{loc:Localize Key=Report_Reason}"
-                                    Binding="{Binding Reason}" Width="4*" />
+                                    Binding="{Binding Reason}" Width="2.6*" MinWidth="160" />
             </DataGrid.Columns>
         </DataGrid>
+        
+        <ComboBox Grid.Row="4" MinWidth="280" HorizontalAlignment="Left"
+                  Margin="16,12,16,0" SelectedIndex="{Binding FilterIndex, Mode=TwoWay}">
+            <ComboBoxItem Content="{loc:Localize Key=Report_Filter_All}" />
+            <ComboBoxItem Content="{loc:Localize Key=Report_Filter_Errors}" />
+            <ComboBoxItem Content="{loc:Localize Key=Report_Filter_Warnings}" />
+        </ComboBox>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
-            <Button Content="{loc:Localize Key=Common_Close}" Click="OnClose" MinWidth="96" />
+        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="16,12,16,16">
+            <!-- TODO: добавить позже обработку сохранения отчета импорта -->
+            <Button Content="{loc:Localize Key=Report_SaveToFile}" MinWidth="150" Margin="0,0,10,0" />
+            <Button Classes="accent" Content="{loc:Localize Key=Common_Close}" Click="OnClose" MinWidth="110" />
         </StackPanel>
     </Grid>
 </Window>
