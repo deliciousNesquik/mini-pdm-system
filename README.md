@@ -2,9 +2,8 @@
 Упрощённая система учёта конструкторского состава изделия: импорт из «CAD- файлов», хранение в реляционной базе данных, расчёты по дереву состава и desktop-интерфейс. импорт документовиз CAD-выгрузки (JSON-эмуляция, готовая к замене на API КОМПАС-3D), хранениев PostgreSQL, расчёты по дереву состава, десктопный интерфейс (Avalonia).
 
 ## Общий вид + сводка импорта
-<img width="1312" height="900" alt="Screenshot 2026-10-06 at 09 13 05" src="https://github.com/user-attachments/assets/78dbfeaf-a62a-4873-a0de-b651b2268f62" />
-
-<img width="872" height="640" alt="Screenshot 2026-10-06 at 09 13 18" src="https://github.com/user-attachments/assets/e1468565-8e1c-4f52-81fa-09fe1328d7ba" />
+<img width="1312" height="900" alt="Screenshot 2026-10-06 at 14 09 02" src="https://github.com/user-attachments/assets/0e8a0b1c-6b41-4560-a355-b95426286905" />
+<img width="1312" height="901" alt="Screenshot 2026-10-06 at 14 09 41" src="https://github.com/user-attachments/assets/3c3d37aa-9d0d-48a4-9a2d-cf3e7cbe5205" />
 
 
 
