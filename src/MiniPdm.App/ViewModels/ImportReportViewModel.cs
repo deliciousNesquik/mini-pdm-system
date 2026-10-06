@@ -12,7 +12,7 @@ namespace MiniPdm.App.ViewModels;
 /// </summary>
 public partial class ImportReportViewModel : ViewModelBase
 {
-    public ImportReportViewModel(ImportAnalysis analysis)
+    public ImportReportViewModel(ImportAnalysis analysis, string folder)
     {
         Issues = analysis.Issues
             .Select(i => new IssueRow(i.FileName, SeverityText(i.Severity), i.Reason, i.Severity))
@@ -20,8 +20,12 @@ public partial class ImportReportViewModel : ViewModelBase
         Accepted = analysis.AcceptedCount;
         Rejected = analysis.RejectedCount;
         Warnings = analysis.WarningCount;
+        Folder = folder;
     }
 
+    [ObservableProperty]
+    private string _folder;
+    
     /// <summary>
     ///     Индекс фильтра
     /// </summary>

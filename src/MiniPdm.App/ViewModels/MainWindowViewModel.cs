@@ -42,7 +42,7 @@ public partial class MainViewModel : ViewModelBase
     public ObjectCardViewModel Card { get; }
 
     public event Action<string, string>? MessageRequested;
-    public event Action<ImportAnalysis>? ImportCompleted;
+    public event Action<ImportAnalysis, string>? ImportCompleted;
     public event Action<IReadOnlyList<SummaryLine>>? SummaryRequested;
 
     public ObservableCollection<TreeNodeViewModel> Roots { get; } = [];
@@ -223,7 +223,7 @@ public partial class MainViewModel : ViewModelBase
             Log.Information("Импорт завершён: принято {Accepted}, отклонено {Rejected}, предупреждений {Warnings}",
                 analysis.AcceptedCount, analysis.RejectedCount, analysis.WarningCount);
 
-            ImportCompleted?.Invoke(analysis);
+            ImportCompleted?.Invoke(analysis, folder);
             await ApplySearchAsync(SearchText);
             await RefreshStatusAsync(); // число объектов и время импорта изменились
         }

@@ -73,8 +73,8 @@ public partial class MainWindow : Window
         }
     }
 
-    private void OnImportCompleted(ImportAnalysis analysis) =>
-        new ImportReportWindow { ViewModel = new ImportReportViewModel(analysis) }.ShowDialog(this);
+    private void OnImportCompleted(ImportAnalysis analysis, string folder) =>
+        new ImportReportWindow { ViewModel = new ImportReportViewModel(analysis, folder) }.ShowDialog(this);
 
     private void OnSummaryRequested(IReadOnlyList<SummaryLine> lines) =>
         new SummaryWindow { ViewModel = new SummaryViewModel(lines) }.ShowDialog(this);
