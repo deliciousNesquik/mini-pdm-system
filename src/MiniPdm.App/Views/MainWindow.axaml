@@ -30,11 +30,11 @@
     </Window.Styles>
 
     <!-- Три строки: тулбар / контент / статус -->
-    <Grid RowDefinitions="Auto,*,Auto" Margin="12">
+    <Grid RowDefinitions="Auto,*,Auto">
 
         <!-- ===== Строка 1: тулбар ===== -->
-        <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto" Margin="0,0,0,10">
-            <Button Grid.Column="0" Content="{loc:Localize Key=Import_Folder}"
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,Auto,*,Auto,Auto" Margin="10,10,10,10">
+            <Button Classes="accent" Grid.Column="0" Content="{loc:Localize Key=Import_Folder}"
                     Command="{Binding ImportFolderCommand}" MinWidth="130" />
             <Button Grid.Column="1" Content="{loc:Localize Key=Calc_Mass}"
                     Command="{Binding CalcMassCommand}" Margin="8,0,0,0" MinWidth="150" />
@@ -59,8 +59,8 @@
                      Watermark="{loc:Localize Key=Search_Watermark}" />
         </Grid>
 
-        <!-- ===== Строка 2: состав изделия | карточка ===== -->
-        <Grid Grid.Row="1" ColumnDefinitions="1.1*,Auto,1.8*">
+        
+        <Grid Grid.Row="1" ColumnDefinitions="1.1*,Auto,1.8*" Margin="10 0 10 0">
 
             <!-- Левая панель: дерево -->
             <Grid Grid.Column="0" RowDefinitions="Auto,*">
@@ -90,10 +90,8 @@
                     </TreeView.ItemTemplate>
                 </TreeView>
             </Grid>
-
-            <!-- Вертикальный разделитель -->
-            <Border Grid.Column="1" Width="1" Margin="10,0"
-                    Background="#E0E0E0" />
+            
+            <GridSplitter Grid.Column="1" Width="1" Background="#E0E0E0" />
 
             <!-- Правая панель: карточка -->
             <ScrollViewer Grid.Column="2" Margin="10,0,0,0">
@@ -170,15 +168,10 @@
                 </StackPanel>
             </ScrollViewer>
         </Grid>
-
-        <!-- ===== Строка 3: статус ===== -->
-        <Border Grid.Row="2" Margin="0,10,0,0"
-                Background="#FAFAFA" BorderBrush="#E0E0E0" BorderThickness="1"
-                CornerRadius="4" Padding="12,6">
+        
+        <Border Grid.Row="2" Background="#FAFAFA" BorderBrush="#E0E0E0" BorderThickness="0 1 0 0" Padding="12,6">
             <StackPanel Orientation="Horizontal" Spacing="24">
-                <TextBlock Text="{Binding StatusDbText}"
-                           Foreground="#B3261E"
-                           IsVisible="{Binding StatusDbText, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                <TextBlock Text="{Binding StatusDbText}" Foreground="#B3261E" IsVisible="{Binding StatusDbText, Converter={x:Static ObjectConverters.IsNotNull}}" />
                 <TextBlock Text="{Binding StatusServerText}" Foreground="#6B6B6B" />
                 <TextBlock Text="{Binding StatusObjectsText}" Foreground="#6B6B6B" />
                 <TextBlock Text="{Binding StatusImportText}" Foreground="#6B6B6B" />
