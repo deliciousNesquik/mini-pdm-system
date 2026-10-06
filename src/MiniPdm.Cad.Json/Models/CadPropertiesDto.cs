@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace MiniPdm.Cad.Json;
+namespace MiniPdm.Cad.Json.Models;
 
 internal sealed class CadPropertiesDto
 {

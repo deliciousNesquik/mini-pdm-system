@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using MiniPdm.Cad.Json.Models;
 using MiniPdm.Core.Cad;
 using MiniPdm.Core.Domain;
 

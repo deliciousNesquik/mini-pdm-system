@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace MiniPdm.Cad.Json;
+namespace MiniPdm.Cad.Json.Models;
 
 /// <summary>DTO формы JSON-документа CAD-системы. Отражает формат обмена.
 /// Маппинг в CadDocument - с нормализацией имен (ADR 0005).</summary>
