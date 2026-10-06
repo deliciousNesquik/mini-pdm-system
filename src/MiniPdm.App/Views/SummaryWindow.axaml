@@ -1,12 +1,18 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:loc="using:MiniPdm.App.Localization"
+        xmlns:vm="using:MiniPdm.App.ViewModels"
         x:Class="MiniPdm.App.Views.SummaryWindow"
+        x:DataType="vm:SummaryViewModel"
         Title="{loc:Localize Key=Calc_Summary}"
         Width="760" Height="500"
         WindowStartupLocation="CenterOwner"
         CanResize="True">
 
+    <Design.DataContext>
+        <vm:SummaryViewModel />
+    </Design.DataContext>
+    
     <Grid RowDefinitions="*,Auto" Margin="16">
         <DataGrid Grid.Row="0"
                   AutoGenerateColumns="False"

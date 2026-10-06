@@ -16,9 +16,9 @@ using Serilog;
 
 namespace MiniPdm.App.ViewModels;
 
-/// <summary>Главный экран по мокапу ТЗ: тулбар (кнопки + поиск + прогресс),
-/// слева дерево состава, справа карточка с составом 1-го уровня, снизу статус.
-/// События MessageRequested / ImportCompleted / SummaryRequested — точки диалогов View.</summary>
+/// <summary>
+///     ViewModel главного окна приложения.
+/// </summary>
 public partial class MainViewModel : ViewModelBase
 {
     private readonly UiReadService _reads;
@@ -49,35 +49,26 @@ public partial class MainViewModel : ViewModelBase
 
     public bool HasNoRoots => Roots.Count == 0;
 
-    [ObservableProperty]
-    private TreeNodeViewModel? _selectedNode;
+    [ObservableProperty] private TreeNodeViewModel? _selectedNode;
 
-    [ObservableProperty]
-    private string _searchText = "";
+    [ObservableProperty] private string _searchText = "";
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(ImportFolderCommand))]
     [NotifyCanExecuteChangedFor(nameof(CancelImportCommand))]
     private bool _isImporting;
 
-    [ObservableProperty]
-    private string _progressText = "";
+    [ObservableProperty] private string _progressText = "";
 
-    [ObservableProperty]
-    private double _progressValue;
-
-    // Статус-строка
-    [ObservableProperty]
-    private string _statusServerText = "";
-
-    [ObservableProperty]
-    private string _statusObjectsText = "";
-
-    [ObservableProperty]
-    private string _statusImportText = "";
+    [ObservableProperty] private double _progressValue;
     
-    [ObservableProperty]
-    private string? _statusDbText;
+    [ObservableProperty] private string _statusServerText = "";
+
+    [ObservableProperty] private string _statusObjectsText = "";
+
+    [ObservableProperty] private string _statusImportText = "";
+
+    [ObservableProperty] private string? _statusDbText;
 
     partial void OnSelectedNodeChanged(TreeNodeViewModel? value)
     {
@@ -85,45 +76,50 @@ public partial class MainViewModel : ViewModelBase
         _ = Card.LoadAsync(value.ObjectId);
     }
 
-    partial void OnSearchTextChanged(string value) => _ = ApplySearchAsync(value);
-
-    /// <summary>Начальная загрузка: корни дерева и статус (зывает MainWindow).</summary>
+    partial void OnSearchTextChanged(string value)
+    {
+        _ = ApplySearchAsync(value);
+    }
+    
     public async Task InitializeAsync()
     {
         await ApplySearchAsync(SearchText);
         await RefreshStatusAsync();
     }
 
-    // ---------- дерево ----------
+    private TreeNodeViewModel ToRootNode(PdmObjectListItem item)
+    {
+        return new TreeNodeViewModel(
+            item.Id,
+            item.Type,
+            item.Designation,
+            item.Name,
+            item.CurrentState,
+            1,
+            item.CurrentState is not null,
+            item.Type == ObjectType.Assembly && item.CurrentState is not null,
+            LoadChildrenAsync,
+            HandleError);
+    }
 
-    private TreeNodeViewModel ToRootNode(PdmObjectListItem item) => new(
-        item.Id,
-        item.Type,
-        item.Designation,
-        item.Name,
-        item.CurrentState,
-        quantity: 1,
-        hasActiveVersion: item.CurrentState is not null,
-        hasChildren: item.Type == ObjectType.Assembly && item.CurrentState is not null,
-        loadChildren: LoadChildrenAsync,
-        onError: HandleError);
-
-    private TreeNodeViewModel ToChildNode(BomRow row) => new(
-        row.Path[^1],
-        row.Type,
-        row.Designation,
-        row.Name,
-        row.State,
-        row.QuantityOnPath,
-        row.HasActiveVersion,
-        row.Type == ObjectType.Assembly && row.HasActiveVersion,
-        LoadChildrenAsync,
-        HandleError);
+    private TreeNodeViewModel ToChildNode(BomRow row)
+    {
+        return new TreeNodeViewModel(
+            row.Path[^1],
+            row.Type,
+            row.Designation,
+            row.Name,
+            row.State,
+            row.QuantityOnPath,
+            row.HasActiveVersion,
+            row.Type == ObjectType.Assembly && row.HasActiveVersion,
+            LoadChildrenAsync,
+            HandleError);
+    }
 
     private async Task<IReadOnlyList<TreeNodeViewModel>> LoadChildrenAsync(long parentId)
     {
         var rows = await _reads.GetChildrenAsync(parentId);
-        Log.Information("LazyLoad parentId={ParentId} → {Count} детей", parentId, rows.Count);
         return rows.Select(ToChildNode).ToList();
     }
 
@@ -161,7 +157,7 @@ public partial class MainViewModel : ViewModelBase
         foreach (var item in items) Roots.Add(ToRootNode(item));
         OnPropertyChanged(nameof(HasNoRoots));
     }
-    
+
     private async Task RefreshStatusAsync()
     {
         try
@@ -186,25 +182,32 @@ public partial class MainViewModel : ViewModelBase
             HandleError(e);
         }
     }
-    
-    /// <summary>UTC-момент из БД → локальное время пользователя. Конвертация —
-    /// ответственность отображения: Data возвращает момент, зону знает клиент.</summary>
+
+    /// <summary>
+    /// Форматирует дату/время UTC в локальное, с учётом Kind.
+    /// </summary>
+    /// <param name="utc"></param>
+    /// <returns></returns>
     private static string FormatLocal(DateTime utc)
     {
         var local = utc.Kind switch
         {
             DateTimeKind.Utc => utc.ToLocalTime(),
             DateTimeKind.Local => utc,
-            // Kind=Unspecified — Npgsql так не отдаёт для timestamptz, но на всякий:
             _ => DateTime.SpecifyKind(utc, DateTimeKind.Utc).ToLocalTime()
         };
         return local.ToString("dd.MM.yyyy HH:mm", CultureInfo.CurrentCulture);
     }
 
-    // ---------- импорт ----------
+    private bool CanRunImport()
+    {
+        return !IsImporting;
+    }
 
-    private bool CanRunImport() => !IsImporting;
-    private bool CanCancelImport() => IsImporting;
+    private bool CanCancelImport()
+    {
+        return IsImporting;
+    }
 
     [RelayCommand(CanExecute = nameof(CanRunImport))]
     private async Task ImportFolderAsync()
@@ -225,7 +228,7 @@ public partial class MainViewModel : ViewModelBase
 
             ImportCompleted?.Invoke(analysis, folder);
             await ApplySearchAsync(SearchText);
-            await RefreshStatusAsync(); // число объектов и время импорта изменились
+            await RefreshStatusAsync();
         }
         catch (OperationCanceledException)
         {
@@ -245,7 +248,10 @@ public partial class MainViewModel : ViewModelBase
     }
 
     [RelayCommand(CanExecute = nameof(CanCancelImport))]
-    private void CancelImport() => _importCts?.Cancel();
+    private void CancelImport()
+    {
+        _importCts?.Cancel();
+    }
 
     private void ReportProgress(ImportProgress p)
     {
@@ -267,14 +273,13 @@ public partial class MainViewModel : ViewModelBase
             : 0;
     }
 
-    // ---------- расчёты ----------
-
-    /// <summary>Масса выбранной сборки: итог показывается в поле «Масса, кг» карточки;
-    /// неполная сумма — диалогом с перечнем виновников (ТЗ: не вернуть неполную сумму).</summary>
+    /// <summary>
+    /// Вычисляет суммарную массу выбранного узла сборки.
+    /// </summary>
     [RelayCommand]
     private async Task CalcMassAsync()
     {
-        if (SelectedNode is not { } node || node.Type != ObjectType.Assembly)
+        if (SelectedNode is not { Type: ObjectType.Assembly } node)
         {
             MessageRequested?.Invoke(Strings.Mass_Result_Title, Strings.Mass_NoSelection);
             return;
@@ -323,13 +328,14 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
-    private static string ReasonOf(MassProblemKind kind) => kind switch
+    private static string ReasonOf(MassProblemKind kind)
     {
-        MassProblemKind.MissingMass => Strings.Mass_Problem_MissingMass,
-        _ => Strings.Mass_Problem_NoActiveVersion
-    };
-
-    // ---------- ошибки ----------
+        return kind switch
+        {
+            MassProblemKind.MissingMass => Strings.Mass_Problem_MissingMass,
+            _ => Strings.Mass_Problem_NoActiveVersion
+        };
+    }
 
     private void HandleError(Exception e)
     {

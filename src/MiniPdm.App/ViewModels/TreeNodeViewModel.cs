@@ -7,11 +7,9 @@ using MiniPdm.Core.Domain;
 
 namespace MiniPdm.App.ViewModels;
 
-/// <summary>Узел ленивого дерева. Стрелка раскрывается за счёт плейсхолдера
-/// в Children (Avalonia рисует expander только для непустых коллекций);
-/// IsExpanded привязан TwoWay из TreeDataTemplate — клик по стрелке
-/// записывает true в VM и запускает один запрос одного уровня.
-/// Подменённые дети сохраняются (_childrenLoaded) — повторные раскрытия бесплатны.</summary>
+/// <summary>
+/// ViewModel для узла дерева.
+/// </summary>
 public partial class TreeNodeViewModel : ViewModelBase
 {
     private readonly Func<long, Task<IReadOnlyList<TreeNodeViewModel>>> _loadChildren;
@@ -90,6 +88,9 @@ public partial class TreeNodeViewModel : ViewModelBase
         _ = ExpandAsync();
     }
 
+    /// <summary>
+    /// Раскрывает узел, загружая его детей.
+    /// </summary>
     private async Task ExpandAsync()
     {
         if (IsBusy) return;
@@ -100,7 +101,6 @@ public partial class TreeNodeViewModel : ViewModelBase
             Children.Clear();
             if (children.Count == 0)
             {
-                // Стрелка была, а детей нет (состав пуст): узел становится листом.
                 _childrenLoaded = true;
                 return;
             }
@@ -113,7 +113,7 @@ public partial class TreeNodeViewModel : ViewModelBase
         }
         catch (Exception e)
         {
-            _onError(e); // видно пользователю; повторное раскрытие повторит попытку
+            _onError(e);
         }
         finally
         {
