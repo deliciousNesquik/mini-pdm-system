@@ -1,9 +1,10 @@
 using Dapper;
 using MiniPdm.Core.Domain;
 using MiniPdm.Core.Import;
+using MiniPdm.Data.Models;
 using Npgsql;
 
-namespace MiniPdm.Data;
+namespace MiniPdm.Data.Repositories;
 
 /// <summary>
 /// Репозиторий для загрузки снимка состояния объектов PDM из базы данных.

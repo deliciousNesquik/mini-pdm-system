@@ -2,9 +2,12 @@ using Dapper;
 using MiniPdm.Core.Cad;
 using MiniPdm.Core.Domain;
 using MiniPdm.Core.Import;
+using MiniPdm.Data.Infrastructure;
+using MiniPdm.Data.Models;
+using MiniPdm.Data.Repositories;
 using Npgsql;
 
-namespace MiniPdm.Data;
+namespace MiniPdm.Data.Services;
 
 /// <summary>
 /// Сервис импорта CAD-документов в базу данных.

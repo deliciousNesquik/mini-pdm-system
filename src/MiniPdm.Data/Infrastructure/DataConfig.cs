@@ -1,6 +1,6 @@
 using Dapper;
 
-namespace MiniPdm.Data;
+namespace MiniPdm.Data.Infrastructure;
 
 internal static class DataConfig
 {

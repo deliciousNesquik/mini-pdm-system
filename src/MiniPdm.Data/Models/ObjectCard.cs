@@ -1,6 +1,6 @@
 using MiniPdm.Core.Domain;
 
-namespace MiniPdm.Data;
+namespace MiniPdm.Data.Models;
 
 /// <summary>
 /// Представляет карточку объекта с его основными свойствами.

@@ -1,9 +1,8 @@
 using Dapper;
+using MiniPdm.Data.Models;
 using Npgsql;
 
-namespace MiniPdm.Data;
-
-public sealed record BomLinkRow(long ChildObjectId, int Quantity);
+namespace MiniPdm.Data.Repositories;
 
 /// <summary>
 /// Репозиторий для работы с таблицей bom_link

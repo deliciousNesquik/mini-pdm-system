@@ -1,6 +1,6 @@
 using MiniPdm.Core.Domain;
 
-namespace MiniPdm.Data;
+namespace MiniPdm.Data.Models;
 
 /// <summary>
 /// Представляет элемент списка объектов PDM.

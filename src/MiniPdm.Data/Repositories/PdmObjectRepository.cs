@@ -1,8 +1,9 @@
 using Dapper;
 using MiniPdm.Core.Domain;
+using MiniPdm.Data.Models;
 using Npgsql;
 
-namespace MiniPdm.Data;
+namespace MiniPdm.Data.Repositories;
 
 /// <summary>
 /// Репозиторий для работы с объектами PDM (Product Data Management) в базе данных.

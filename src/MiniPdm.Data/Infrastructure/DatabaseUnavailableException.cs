@@ -1,4 +1,4 @@
-namespace MiniPdm.Data;
+namespace MiniPdm.Data.Infrastructure;
 
 /// <summary>
 /// Предоставляет исключение, которое возникает, когда база данных недоступна.

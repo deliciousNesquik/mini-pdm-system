@@ -2,7 +2,7 @@ using System.Data;
 using Dapper;
 using MiniPdm.Core.Domain;
 
-namespace MiniPdm.Data;
+namespace MiniPdm.Data.Infrastructure;
 
 
 /// <summary>

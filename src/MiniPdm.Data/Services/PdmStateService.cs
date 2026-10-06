@@ -1,6 +1,7 @@
 using MiniPdm.Core.Domain;
+using MiniPdm.Data.Infrastructure;
 
-namespace MiniPdm.Data;
+namespace MiniPdm.Data.Services;
 
 /// <summary>
 /// Сервис для атомарного изменения состояния версии и отката указателя current_version_id при аннулировании текущей версии (ADR 0004).

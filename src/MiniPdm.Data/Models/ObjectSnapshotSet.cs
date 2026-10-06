@@ -1,6 +1,6 @@
 using MiniPdm.Core.Import;
 
-namespace MiniPdm.Data;
+namespace MiniPdm.Data.Models;
 
 /// <summary>
 /// Результат загрузки снимков для Core - снимки без id

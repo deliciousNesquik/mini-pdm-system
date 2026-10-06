@@ -11,7 +11,9 @@ using MiniPdm.App.Localization;
 using MiniPdm.Core.Bom;
 using MiniPdm.Core.Domain;
 using MiniPdm.Core.Import;
-using MiniPdm.Data;
+using MiniPdm.Data.Infrastructure;
+using MiniPdm.Data.Models;
+using MiniPdm.Data.Services;
 using Serilog;
 
 namespace MiniPdm.App.ViewModels;

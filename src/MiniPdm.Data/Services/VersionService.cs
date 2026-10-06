@@ -1,8 +1,9 @@
 using Dapper;
 using MiniPdm.Core.Domain;
+using MiniPdm.Data.Models;
 using Npgsql;
 
-namespace MiniPdm.Data;
+namespace MiniPdm.Data.Services;
 
 /// <summary>
 /// Сервис управления версиями объектов. Создаёт, обновляет, аннулирует версии и управляет указателем текущей версии.

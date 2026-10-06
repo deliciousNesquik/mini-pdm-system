@@ -1,4 +1,4 @@
-namespace MiniPdm.Data;
+namespace MiniPdm.Data.Models;
 
 public sealed class TreeRowRaw
 {

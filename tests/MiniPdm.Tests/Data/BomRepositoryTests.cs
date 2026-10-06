@@ -2,7 +2,9 @@ using Dapper;
 using MiniPdm.Core.Bom;
 using MiniPdm.Core.Cad;
 using MiniPdm.Core.Domain;
-using MiniPdm.Data;
+using MiniPdm.Data.Infrastructure;
+using MiniPdm.Data.Repositories;
+using MiniPdm.Data.Services;
 using Npgsql;
 
 namespace MiniPdm.Tests.Data;

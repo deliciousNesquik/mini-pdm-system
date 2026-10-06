@@ -1,6 +1,6 @@
 using MiniPdm.Core.Domain;
 
-namespace MiniPdm.Data;
+namespace MiniPdm.Data.Models;
 
 public sealed record CurrentVersionRow(
     long ObjectId, long? VersionId, ObjectState? State, string? Material, decimal? MassKg);

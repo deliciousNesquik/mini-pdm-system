@@ -2,7 +2,7 @@ using System.Data;
 using Dapper;
 using MiniPdm.Core.Domain;
 
-namespace MiniPdm.Data;
+namespace MiniPdm.Data.Infrastructure;
 
 /// <summary>
 /// Обработчик типа ObjectState для Dapper, обеспечивающий корректное преобразование

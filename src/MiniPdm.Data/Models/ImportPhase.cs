@@ -1,4 +1,4 @@
-namespace MiniPdm.Data;
+namespace MiniPdm.Data.Models;
 
 /// <summary>
 /// Фазы импорта.

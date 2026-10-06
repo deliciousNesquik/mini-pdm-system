@@ -1,5 +1,5 @@
 using MiniPdm.Core.Domain;
 
-namespace MiniPdm.Data;
+namespace MiniPdm.Data.Models;
 
 public sealed record ObjectRow(long Id, ObjectType Type, string? Designation, string Name);

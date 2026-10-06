@@ -1,7 +1,9 @@
 using Jab;
 using MiniPdm.Cad.Json;
 using MiniPdm.Core.Cad;
-using MiniPdm.Data;
+using MiniPdm.Data.Infrastructure;
+using MiniPdm.Data.Repositories;
+using MiniPdm.Data.Services;
 
 namespace MiniPdm.App;
 

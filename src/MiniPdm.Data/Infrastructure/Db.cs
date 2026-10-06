@@ -1,7 +1,7 @@
 using System.Net.Sockets;
 using Npgsql;
 
-namespace MiniPdm.Data;
+namespace MiniPdm.Data.Infrastructure;
 
 /// <summary>
 /// Обертка над подключением к PostgreSQL с регистрацией TypeHandler Dapper для enum.

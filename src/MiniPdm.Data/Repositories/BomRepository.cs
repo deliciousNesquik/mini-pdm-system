@@ -1,9 +1,10 @@
 using Dapper;
 using MiniPdm.Core.Bom;
 using MiniPdm.Core.Domain;
+using MiniPdm.Data.Models;
 using Npgsql;
 
-namespace MiniPdm.Data;
+namespace MiniPdm.Data.Repositories;
 
 /// <summary>
 /// Репозиторий для работы с составами (BOM) в базе данных.

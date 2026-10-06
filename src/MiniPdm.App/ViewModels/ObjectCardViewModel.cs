@@ -7,7 +7,8 @@ using CommunityToolkit.Mvvm.Input;
 using MiniPdm.App.Localization;
 using MiniPdm.App.Models;
 using MiniPdm.Core.Domain;
-using MiniPdm.Data;
+using MiniPdm.Data.Models;
+using MiniPdm.Data.Services;
 
 namespace MiniPdm.App.ViewModels;
 

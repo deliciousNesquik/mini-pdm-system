@@ -1,7 +1,10 @@
 using Dapper;
 using MiniPdm.Core.Bom;
+using MiniPdm.Data.Infrastructure;
+using MiniPdm.Data.Models;
+using MiniPdm.Data.Repositories;
 
-namespace MiniPdm.Data;
+namespace MiniPdm.Data.Services;
 
 /// <summary>
 /// Сервис чтения данных для UI.

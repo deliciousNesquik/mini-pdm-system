@@ -4,7 +4,7 @@ using Avalonia.Markup.Xaml;
 using MiniPdm.App.Localization;
 using MiniPdm.App.ViewModels;
 using MiniPdm.App.Views;
-using MiniPdm.Data;
+using MiniPdm.Data.Services;
 using Serilog;
 
 namespace MiniPdm.App;
