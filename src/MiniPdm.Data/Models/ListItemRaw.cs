@@ -9,5 +9,5 @@ public sealed class ListItemRaw
     public string? Designation { get; set; }
     public string Name { get; set; } = "";
     public int? CurrentVersionNo { get; set; }
-    public ObjectState CurrentState { get; set; }
+    public ObjectState? CurrentState { get; set; }
 }
