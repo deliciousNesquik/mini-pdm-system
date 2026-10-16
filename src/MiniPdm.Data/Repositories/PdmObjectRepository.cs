@@ -111,12 +111,12 @@ public sealed class PdmObjectRepository
             ? ObjectCard.Empty
             : new ObjectCard(
                 raw.Id,
-                Enum.Parse<ObjectType>(raw.Type),
+                raw.Type,
                 raw.Designation,
                 raw.Name,
                 raw.CurrentVersionId,
                 raw.CurrentVersionNo,
-                raw.CurrentState is null ? null : Enum.Parse<ObjectState>(raw.CurrentState),
+                raw.CurrentState,
                 raw.Material,
                 raw.MassKg);
     }
@@ -128,10 +128,10 @@ public sealed class PdmObjectRepository
     /// <returns>Объект списка PDM</returns>
     private static PdmObjectListItem Map(ListItemRaw r) => new(
         r.Id,
-        Enum.Parse<ObjectType>(r.Type),
+        r.Type,
         r.Designation,
         r.Name,
         r.CurrentVersionNo,
-        r.CurrentState is null ? null : Enum.Parse<ObjectState>(r.CurrentState));
+        r.CurrentState);
 
 }

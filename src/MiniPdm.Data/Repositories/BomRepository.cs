@@ -93,11 +93,11 @@ public sealed class BomRepository
     /// <param name="r"></param>
     /// <returns></returns>
     private static BomRow Map(TreeRowRaw r) => new(
-        r.Path,
-        Enum.Parse<ObjectType>(r.Type),
+        r.Path, 
+        r.Type,
         r.Designation,
         r.Name,
-        r.State is null ? null : Enum.Parse<ObjectState>(r.State),
+        r.State,
         r.QuantityOnPath,
         r.HasActiveVersion,
         r.UnitMassKg);
