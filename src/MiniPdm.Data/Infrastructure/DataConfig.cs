@@ -13,8 +13,10 @@ internal static class DataConfig
         return true;
     }, LazyThreadSafetyMode.ExecutionAndPublication);
 
+#pragma warning disable CA2255 // регистрация Dapper-хендлеров до любого кода сборки
     [ModuleInitializer]
     internal static void Init() => Register();
+#pragma warning restore CA2255
 
     public static void Register() => _ = _registered.Value;
 }
