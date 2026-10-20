@@ -5,7 +5,107 @@
 <img width="1312" height="900" alt="Screenshot 2026-10-06 at 14 09 02" src="https://github.com/user-attachments/assets/0e8a0b1c-6b41-4560-a355-b95426286905" />
 <img width="1312" height="901" alt="Screenshot 2026-10-06 at 14 09 41" src="https://github.com/user-attachments/assets/3c3d37aa-9d0d-48a4-9a2d-cf3e7cbe5205" />
 
+## Схема работы системы
+```mermaid
+flowchart TD
 
+subgraph group_desktop["Desktop interface"]
+  node_app["App composition<br/>[AppServices.cs]"]
+  node_mainvm["Main window VM"]
+  node_mainview["Main window"]
+  node_importreport["Import report"]
+  node_summary["Summary view"]
+end
+
+subgraph group_import["CAD import"]
+  node_cadfiles["CAD export files"]
+  node_reader["JSON CAD reader"]
+  node_cadmodel["CAD document model<br/>[CadDocument.cs]"]
+end
+
+subgraph group_domain["Domain logic"]
+  node_analyzer["Import analyzer<br/>[ImportAnalyzer.cs]"]
+  node_reimport["Re-import rules<br/>[ReImportRules.cs]"]
+  node_bomcalc["BOM calculations<br/>[BomCalculator.cs]"]
+end
+
+subgraph group_data["Data services"]
+  node_importservice["Import orchestration<br/>[ImportService.cs]"]
+  node_objects["Object repository"]
+  node_snapshots["Import snapshots"]
+  node_bomlinks["BOM links"]
+  node_versions["Version service<br/>[VersionService.cs]"]
+  node_state["State service<br/>[PdmStateService.cs]"]
+  node_uiread["UI read facade<br/>[UiReadService.cs]"]
+  node_bomrepo["BOM repository<br/>[BomRepository.cs]"]
+end
+
+node_user(("Engineer"))
+node_postgres[("PostgreSQL")]
+
+node_user -->|"uses"| node_mainview
+node_mainview -->|"presents"| node_mainvm
+node_app -->|"registers"| node_reader
+node_app -->|"registers"| node_importservice
+node_app -->|"registers"| node_uiread
+node_app -->|"registers"| node_state
+node_mainvm -->|"invokes"| node_importservice
+node_mainvm -->|"invokes"| node_uiread
+node_mainvm -->|"invokes"| node_state
+node_cadfiles -->|"reads"| node_reader
+node_importservice -->|"reads documents"| node_reader
+node_reader -->|"produces"| node_cadmodel
+node_importservice -->|"analyzes"| node_analyzer
+node_analyzer -->|"validates"| node_cadmodel
+node_importservice -->|"applies rules"| node_reimport
+node_importservice -->|"writes objects"| node_objects
+node_importservice -->|"writes versions"| node_versions
+node_importservice -->|"loads snapshots"| node_snapshots
+node_importservice -->|"writes links"| node_bomlinks
+node_importservice -->|"commits transaction"| node_postgres
+node_objects -->|"queries"| node_postgres
+node_versions -->|"updates versions"| node_postgres
+node_state -->|"delegates"| node_versions
+node_uiread -->|"reads objects"| node_objects
+node_uiread -->|"reads BOM"| node_bomrepo
+node_bomrepo -->|"loads tree"| node_postgres
+node_mainvm -->|"calculates mass"| node_bomcalc
+node_bomcalc -.->|"provides summary"| node_summary
+node_mainview -->|"shows report"| node_importreport
+node_mainview -->|"shows summary"| node_summary
+
+click node_app "https://github.com/deliciousnesquik/mini-pdm-system/blob/main/src/MiniPdm.App/AppServices.cs"
+click node_mainvm "https://github.com/deliciousnesquik/mini-pdm-system/blob/main/src/MiniPdm.App/ViewModels/MainWindowViewModel.cs"
+click node_mainview "https://github.com/deliciousnesquik/mini-pdm-system/blob/main/src/MiniPdm.App/Views/MainWindow.axaml.cs"
+click node_importreport "https://github.com/deliciousnesquik/mini-pdm-system/blob/main/src/MiniPdm.App/ViewModels/ImportReportViewModel.cs"
+click node_summary "https://github.com/deliciousnesquik/mini-pdm-system/blob/main/src/MiniPdm.App/ViewModels/SummaryViewModel.cs"
+click node_reader "https://github.com/deliciousnesquik/mini-pdm-system/blob/main/src/MiniPdm.Cad.Json/JsonCadDocumentReader.cs"
+click node_cadmodel "https://github.com/deliciousnesquik/mini-pdm-system/blob/main/src/MiniPdm.Core/Cad/CadDocument.cs"
+click node_analyzer "https://github.com/deliciousnesquik/mini-pdm-system/blob/main/src/MiniPdm.Core/Import/ImportAnalyzer.cs"
+click node_reimport "https://github.com/deliciousnesquik/mini-pdm-system/blob/main/src/MiniPdm.Core/Import/ReImportRules.cs"
+click node_importservice "https://github.com/deliciousnesquik/mini-pdm-system/blob/main/src/MiniPdm.Data/Services/ImportService.cs"
+click node_objects "https://github.com/deliciousnesquik/mini-pdm-system/blob/main/src/MiniPdm.Data/Repositories/PdmObjectRepository.cs"
+click node_snapshots "https://github.com/deliciousnesquik/mini-pdm-system/blob/main/src/MiniPdm.Data/Repositories/PdmObjectSnapshotRepository.cs"
+click node_bomlinks "https://github.com/deliciousnesquik/mini-pdm-system/blob/main/src/MiniPdm.Data/Repositories/BomLinkRepository.cs"
+click node_versions "https://github.com/deliciousnesquik/mini-pdm-system/blob/main/src/MiniPdm.Data/Services/VersionService.cs"
+click node_state "https://github.com/deliciousnesquik/mini-pdm-system/blob/main/src/MiniPdm.Data/Services/PdmStateService.cs"
+click node_uiread "https://github.com/deliciousnesquik/mini-pdm-system/blob/main/src/MiniPdm.Data/Services/UiReadService.cs"
+click node_bomrepo "https://github.com/deliciousnesquik/mini-pdm-system/blob/main/src/MiniPdm.Data/Repositories/BomRepository.cs"
+click node_bomcalc "https://github.com/deliciousnesquik/mini-pdm-system/blob/main/src/MiniPdm.Core/Bom/BomCalculator.cs"
+
+classDef toneNeutral fill:#f8fafc,stroke:#334155,stroke-width:1.5px,color:#0f172a
+classDef toneBlue fill:#dbeafe,stroke:#2563eb,stroke-width:1.5px,color:#172554
+classDef toneAmber fill:#fef3c7,stroke:#d97706,stroke-width:1.5px,color:#78350f
+classDef toneMint fill:#dcfce7,stroke:#16a34a,stroke-width:1.5px,color:#14532d
+classDef toneRose fill:#ffe4e6,stroke:#e11d48,stroke-width:1.5px,color:#881337
+classDef toneIndigo fill:#e0e7ff,stroke:#4f46e5,stroke-width:1.5px,color:#312e81
+classDef toneTeal fill:#ccfbf1,stroke:#0f766e,stroke-width:1.5px,color:#134e4a
+class node_app,node_mainvm,node_mainview,node_importreport,node_summary toneBlue
+class node_cadfiles,node_reader,node_cadmodel,node_postgres toneAmber
+class node_analyzer,node_reimport,node_bomcalc toneMint
+class node_importservice,node_objects,node_snapshots,node_bomlinks,node_versions,node_state,node_uiread,node_bomrepo toneRose
+class node_user toneIndigo
+```
 
 ## Стек
 
